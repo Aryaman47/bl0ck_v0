@@ -1,17 +1,17 @@
 from bl0ckchain.bl0ckchain import Blockchain
 from bl0ckchain.display import display_chain, last_block
+from bl0ckchain.mining import set_mining_timeout
 
 def main():
     blockchain = Blockchain()
     ddm_status = "❌"  # Initially, Dynamic Difficulty Mode (DDM) is OFF
-     # Get the difficulty from the last block or set it to 1 if there are no blocks in the chain
 
     print("\nCurrent block(s) in the chain:")
-    last_block(blockchain.chain)  # ✅ Pass the blockchain chain
+    last_block(blockchain.chain)
 
     while True:
         Difficulty = blockchain.chain[-1].difficulty if blockchain.chain else 1 
-        print(f"\n[ DDM {ddm_status} ] | Last Block Difficulty: {Difficulty}")  # Show DDM status
+        print(f"\n[ DDM {ddm_status} ] | Last Block Difficulty: {Difficulty}")  
         print("\nOptions:")
         print("b - Create a new block")
         print("v - View blockchain")
@@ -19,6 +19,7 @@ def main():
         print("r - Revert to Standard Mode (bl0ck v0)")
         print("n - Set manual difficulty (Only in DDM)")
         print("a - Switch back to Auto Mode (Only in DDM)")
+        print("t - Set mining timeout (Default: 60s)")
         print("q - Quit")
 
         choice = input("\nEnter your choice: ").strip().lower()
@@ -26,10 +27,10 @@ def main():
         if choice == "b":
             blockchain.add_block()
             print("\nCurrent block(s) in the chain:")
-            last_block(blockchain.chain)  # ✅ Pass blockchain.chain
+            last_block(blockchain.chain)
 
         elif choice == "v":
-            display_chain(blockchain.chain)  # ✅ Fix method call
+            display_chain(blockchain.chain)
 
         elif choice == "d":
             if blockchain.dynamic_difficulty_enabled:
@@ -62,6 +63,13 @@ def main():
                 print("🔄 Switched back to Auto Mode.")
             else:
                 print("⚠️ Dynamic Difficulty Mode is not enabled!")
+
+        elif choice == "t":
+            try:
+                timeout = int(input("Enter mining timeout (in seconds): "))
+                set_mining_timeout(timeout)
+            except ValueError:
+                print("❌ Invalid input! Please enter a valid number.")
 
         elif choice == "q":
             print("Exiting...")

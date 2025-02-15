@@ -45,6 +45,12 @@ class Blockchain:
         self.manual_mode = False
         print("🔄 Switching back to Automatic Difficulty Adjustment!")
 
+        # If a failure occurred, start from a reduced difficulty
+        if self.difficulty_adjuster.failed_difficulty:
+            new_difficulty = max(1, self.difficulty_adjuster.failed_difficulty - 1)
+            self.difficulty_adjuster.difficulty = new_difficulty
+            print(f"🔄 Adjusting difficulty to {new_difficulty} due to previous failure.")
+
     def add_block(self):
         last_block = self.chain[-1]
         start_time = time.time()
@@ -73,6 +79,12 @@ class Blockchain:
             self.difficulty_adjuster.record_block_time(start_time)
             new_difficulty = self.difficulty_adjuster.adjust_difficulty()
             print(f"⏳ Mining Time: {new_block.mining_time}s | New Difficulty: {new_difficulty}")
+
+            # If previous failure was recorded and block was mined successfully, try increasing difficulty
+            if self.difficulty_adjuster.failed_difficulty:
+                if difficulty < self.difficulty_adjuster.failed_difficulty:
+                    self.difficulty_adjuster.difficulty += 1  # Try increasing difficulty
+                    print(f"🔼 Increasing difficulty to {self.difficulty_adjuster.difficulty}.")
 
         self.chain.append(new_block)
         save_to_file(self.chain)
