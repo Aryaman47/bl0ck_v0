@@ -1,0 +1,101 @@
+[
+    {
+        "index": 0,
+        "timestamp": "2025-02-15 13:38:18.527190",
+        "data": "Genesis Block",
+        "previous_hash": "0",
+        "difficulty": 1,
+        "nonce": 0,
+        "hash": "f73abc5e717b2e1fff65a68829518a67f136951455f8b7e546ce77bb787c99b9"
+    },
+    {
+        "index": 1,
+        "timestamp": "2025-02-15 13:38:23.302297",
+        "data": "Block 1",
+        "previous_hash": "f73abc5e717b2e1fff65a68829518a67f136951455f8b7e546ce77bb787c99b9",
+        "difficulty": 1,
+        "nonce": 4,
+        "hash": "07b701e8bd3bd25a80dcc62e83ffbdb0d0d897b0aeb43a08d35c788f28908d3e"
+    },
+    {
+        "index": 2,
+        "timestamp": "2025-02-15 13:38:24.140850",
+        "data": "Block 2",
+        "previous_hash": "07b701e8bd3bd25a80dcc62e83ffbdb0d0d897b0aeb43a08d35c788f28908d3e",
+        "difficulty": 1,
+        "nonce": 19,
+        "hash": "0e30f853e43dd66dd474376a9f3156109d362a07ae49d7885995d8f14c40a8e8"
+    },
+    {
+        "index": 3,
+        "timestamp": "2025-02-15 13:38:24.969967",
+        "data": "Block 3",
+        "previous_hash": "0e30f853e43dd66dd474376a9f3156109d362a07ae49d7885995d8f14c40a8e8",
+        "difficulty": 1,
+        "nonce": 17,
+        "hash": "0401958bbe65cd74b3e273b651073e3b33bda46a1932c4f9934fac088713a239"
+    },
+    {
+        "index": 4,
+        "timestamp": "2025-02-15 13:38:25.750420",
+        "data": "Block 4",
+        "previous_hash": "0401958bbe65cd74b3e273b651073e3b33bda46a1932c4f9934fac088713a239",
+        "difficulty": 1,
+        "nonce": 18,
+        "hash": "0eca1a2c25844a3f44ce536d4ab4050111935593270deb3a6f7262fab14b6ba8"
+    },
+    {
+        "index": 5,
+        "timestamp": "2025-02-15 13:38:26.568762",
+        "data": "Block 5",
+        "previous_hash": "0eca1a2c25844a3f44ce536d4ab4050111935593270deb3a6f7262fab14b6ba8",
+        "difficulty": 1,
+        "nonce": 1,
+        "hash": "0f1ea3fd3ba4e0da6e1b7f21380f24fd949307895e07ee59a8d676722a86dcf6"
+    },
+    {
+        "index": 6,
+        "timestamp": "2025-02-15 13:38:27.447433",
+        "data": "Block 6",
+        "previous_hash": "0f1ea3fd3ba4e0da6e1b7f21380f24fd949307895e07ee59a8d676722a86dcf6",
+        "difficulty": 2,
+        "nonce": 200,
+        "hash": "00909d14029c80fc1b52582b6f2c92ed4a0aa8837b18828a56a5db234743fd84"
+    },
+    {
+        "index": 7,
+        "timestamp": "2025-02-15 13:38:28.224648",
+        "data": "Block 7",
+        "previous_hash": "00909d14029c80fc1b52582b6f2c92ed4a0aa8837b18828a56a5db234743fd84",
+        "difficulty": 3,
+        "nonce": 3510,
+        "hash": "0003d0191bb1e31e3b16cd6bd541e2b034f1e0cdc9d968c1c3870c20cb74022a"
+    },
+    {
+        "index": 8,
+        "timestamp": "2025-02-15 13:38:29.223464",
+        "data": "Block 8",
+        "previous_hash": "0003d0191bb1e31e3b16cd6bd541e2b034f1e0cdc9d968c1c3870c20cb74022a",
+        "difficulty": 4,
+        "nonce": 4573,
+        "hash": "0000c8fc2acfb6573afd1963f1acd9ad3e02aebf2a61ca59423147d526344163"
+    },
+    {
+        "index": 9,
+        "timestamp": "2025-02-15 13:38:30.035332",
+        "data": "Block 9",
+        "previous_hash": "0000c8fc2acfb6573afd1963f1acd9ad3e02aebf2a61ca59423147d526344163",
+        "difficulty": 5,
+        "nonce": 2004002,
+        "hash": "00000730e94df48036f3768df6f092b41a3b938ef2833e45654a59b4d107c436"
+    },
+    {
+        "index": 10,
+        "timestamp": "2025-02-15 13:38:34.992649",
+        "data": "Block 10",
+        "previous_hash": "00000730e94df48036f3768df6f092b41a3b938ef2833e45654a59b4d107c436",
+        "difficulty": 6,
+        "nonce": 1117374,
+        "hash": "0000008bf0242da88b20009746b6cf2799ac2f5f2d0b6891b45bd06878ae20e1"
+    }
+]
