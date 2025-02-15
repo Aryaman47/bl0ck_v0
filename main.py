@@ -1,14 +1,17 @@
-from bl0ck import Blockchain
+from bl0ckchain.bl0ckchain import Blockchain
+from bl0ckchain.display import display_chain, last_block
 
 def main():
     blockchain = Blockchain()
     ddm_status = "❌"  # Initially, Dynamic Difficulty Mode (DDM) is OFF
+     # Get the difficulty from the last block or set it to 1 if there are no blocks in the chain
 
     print("\nCurrent block(s) in the chain:")
-    blockchain.last_block()
+    last_block(blockchain.chain)  # ✅ Pass the blockchain chain
 
     while True:
-        print(f"\n[ DDM {ddm_status} ]")  # Show DDM status
+        Difficulty = blockchain.chain[-1].difficulty if blockchain.chain else 1 
+        print(f"\n[ DDM {ddm_status} ] | Last Block Difficulty: {Difficulty}")  # Show DDM status
         print("\nOptions:")
         print("b - Create a new block")
         print("v - View blockchain")
@@ -23,14 +26,14 @@ def main():
         if choice == "b":
             blockchain.add_block()
             print("\nCurrent block(s) in the chain:")
-            blockchain.last_block()
+            last_block(blockchain.chain)  # ✅ Pass blockchain.chain
 
         elif choice == "v":
-            blockchain.display_chain()
+            display_chain(blockchain.chain)  # ✅ Fix method call
 
         elif choice == "d":
             if blockchain.dynamic_difficulty_enabled:
-                print("⚠️ DDM is already enabled!")  # Fixes false warning issue
+                print("⚠️ DDM is already enabled!")  
             else:
                 blockchain.enable_dynamic_difficulty()
                 ddm_status = "✅"
