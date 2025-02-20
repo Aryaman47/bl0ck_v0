@@ -56,7 +56,6 @@ def main():
                     print("❌ Invalid input! Please enter a number between 1 and 10.")
             else:
                 print("⚠️ Dynamic Difficulty Mode is not enabled! Press 'd' first.")
-
         elif choice == "a":
             if blockchain.dynamic_difficulty_enabled:
                 blockchain.switch_to_auto_mode()
