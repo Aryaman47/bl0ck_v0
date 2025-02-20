@@ -1,7 +1,7 @@
 import time
 
 class DifficultyAdjuster:
-    def __init__(self, target_block_time=10, adjustment_interval=5, max_difficulty=10, timeout_duration=30):
+    def __init__(self, target_block_time=10, adjustment_interval=5, max_difficulty=10):
         """
         Initializes the difficulty adjuster.
         :param target_block_time: Ideal time (in seconds) to mine a block.
@@ -12,7 +12,7 @@ class DifficultyAdjuster:
         self.target_block_time = target_block_time
         self.adjustment_interval = adjustment_interval
         self.max_difficulty = max_difficulty
-        self.timeout_duration = timeout_duration
+        # self.timeout_duration = timeout_duration
         self.difficulty = 1  # Default difficulty
         self.block_times = []  # Store timestamps of last blocks
         self.failed_difficulty = None  # Store difficulty if a timeout occurs
@@ -41,6 +41,7 @@ class DifficultyAdjuster:
 
     def check_timeout(self, start_time):
         """Check if mining exceeds timeout duration."""
+        global timeout_limit
         if time.time() - start_time > self.timeout_duration:
             self.failed_difficulty = self.difficulty  # Store the failed difficulty
             return True
