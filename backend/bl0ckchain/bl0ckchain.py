@@ -89,3 +89,5 @@ class Blockchain:
         self.chain.append(new_block)
         save_to_file(self.chain)
         print(f"\n✅ Block {new_block.index} added! Difficulty: {new_block.difficulty}")
+
+        return new_block

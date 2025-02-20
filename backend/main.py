@@ -22,12 +22,23 @@ async def get_blockchain():
     if not chain_data:
         raise HTTPException(status_code=404, detail="Blockchain is empty")
     return {"blockchain": chain_data}
-
 @app.post("/blockchain/add")
 async def add_block():
     """Add a new block to the blockchain."""
-    blockchain.add_block()
-    return {"message": "Block added successfully!"}
+    new_block = blockchain.add_block()  # Store the block
+
+    if new_block is None:
+        return {
+            "error": "❌ Block mining failed due to timeout!",
+            "failed_difficulty": blockchain.difficulty_adjuster.failed_difficulty,
+        }
+
+    return {
+        "message": "✅ Block added successfully!",
+        "mining_time": new_block.mining_time,
+        "difficulty": new_block.difficulty,
+    }
+
 
 @app.get("/blockchain/last-block")
 async def get_last_block():
