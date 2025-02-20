@@ -7,7 +7,6 @@ class DifficultyAdjuster:
         :param target_block_time: Ideal time (in seconds) to mine a block.
         :param adjustment_interval: Number of blocks after which difficulty is adjusted.
         :param max_difficulty: Maximum difficulty allowed.
-        :param timeout_duration: Time (seconds) after which mining a block is considered failed.
         """
         self.target_block_time = target_block_time
         self.adjustment_interval = adjustment_interval
@@ -16,9 +15,8 @@ class DifficultyAdjuster:
         self.block_times = []  # Store timestamps of last blocks
         self.failed_difficulty = None  # Store difficulty if a timeout occurs
 
-    def record_block_time(self, start_time):
+    def record_block_time(self, mining_time):
         """Records the mining duration of a block."""
-        mining_time = time.time() - start_time
         self.block_times.append(mining_time)
 
         if len(self.block_times) > self.adjustment_interval:
@@ -38,10 +36,6 @@ class DifficultyAdjuster:
 
         return self.difficulty
 
-    def check_timeout(self, start_time):
-        """Check if mining exceeds timeout duration."""
-        global timeout_limit
-        if time.time() - start_time > self.timeout_duration:
-            self.failed_difficulty = self.difficulty  # Store the failed difficulty 
-            return True
-        return False
+    def track_failed_difficulty(self, difficulty):
+        """Tracks difficulty level when mining fails due to timeout."""
+        self.failed_difficulty = difficulty

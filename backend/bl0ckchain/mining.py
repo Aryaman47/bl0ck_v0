@@ -14,9 +14,11 @@ def mine_block(block):
         block.hash = block.calculate_hash()
 
         if time.time() - start_time > timeout_limit:
-            return None, time.time() - start_time  # Mining failed due to timeout
+            block.mining_time = time.time() - start_time  # Store mining failure duration
+            return None, block.mining_time  # Mining failed due to timeout
 
-    return block.hash, time.time() - start_time
+    block.mining_time = time.time() - start_time  # Store successful mining duration
+    return block.hash, block.mining_time
 
 def set_mining_timeout(timeout):
     """Allows users to set a manual timeout limit."""
