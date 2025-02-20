@@ -12,7 +12,6 @@ class DifficultyAdjuster:
         self.target_block_time = target_block_time
         self.adjustment_interval = adjustment_interval
         self.max_difficulty = max_difficulty
-        # self.timeout_duration = timeout_duration
         self.difficulty = 1  # Default difficulty
         self.block_times = []  # Store timestamps of last blocks
         self.failed_difficulty = None  # Store difficulty if a timeout occurs
@@ -43,6 +42,6 @@ class DifficultyAdjuster:
         """Check if mining exceeds timeout duration."""
         global timeout_limit
         if time.time() - start_time > self.timeout_duration:
-            self.failed_difficulty = self.difficulty  # Store the failed difficulty
+            self.failed_difficulty = self.difficulty  # Store the failed difficulty 
             return True
         return False
