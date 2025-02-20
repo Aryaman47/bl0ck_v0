@@ -18,23 +18,28 @@ class DifficultyAdjuster:
     def record_block_time(self, mining_time):
         """Records the mining duration of a block."""
         self.block_times.append(mining_time)
-
         if len(self.block_times) > self.adjustment_interval:
-            self.block_times.pop(0)  # Keep only the latest 'adjustment_interval' times
+            self.block_times.pop(0)
+
+        print(f"[DEBUG] Block Times: {self.block_times}")
+
 
     def adjust_difficulty(self):
-        """Adjusts difficulty dynamically based on average block mining time."""
         if len(self.block_times) < self.adjustment_interval:
+            print(f"[DEBUG] Not enough blocks to adjust difficulty: {len(self.block_times)}/{self.adjustment_interval}")
             return self.difficulty  # Not enough data to adjust yet
 
         avg_time = sum(self.block_times) / len(self.block_times)
+        print(f"[DEBUG] Avg Mining Time: {avg_time}s | Current Difficulty: {self.difficulty}")
 
         if avg_time < self.target_block_time:
             self.difficulty = min(self.max_difficulty, self.difficulty + 1)  # Increase difficulty
         elif avg_time > self.target_block_time:
             self.difficulty = max(1, self.difficulty - 1)  # Decrease but keep at least 1
 
+        print(f"[DEBUG] New Difficulty: {self.difficulty}")
         return self.difficulty
+
 
     def track_failed_difficulty(self, difficulty):
         """Tracks difficulty level when mining fails due to timeout."""

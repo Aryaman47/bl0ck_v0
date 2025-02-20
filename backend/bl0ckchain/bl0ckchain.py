@@ -72,13 +72,13 @@ class Blockchain:
             new_block.mining_time = round(mining_time, 2)
 
             if new_block.hash is None:
-                print(f"❌ Mining failed! Difficulty {difficulty} exceeded the timeout.")
+                print(f"❌ [DEBUG] Mining failed! Difficulty {difficulty} exceeded timeout.")
                 self.difficulty_adjuster.failed_difficulty = difficulty
-                return
+                return  # Ensure function exits, preventing further processing
 
-            self.difficulty_adjuster.record_block_time(start_time)
+            self.difficulty_adjuster.record_block_time(new_block.mining_time)
             new_difficulty = self.difficulty_adjuster.adjust_difficulty()
-            print(f"⏳ Mining Time: {new_block.mining_time}s | New Difficulty: {new_difficulty}")
+            print(f"⏳ [DEBUG] Mining Time: {new_block.mining_time}s | Adjusted Difficulty: {new_difficulty}")
 
             # If previous failure was recorded and block was mined successfully, try increasing difficulty
             if self.difficulty_adjuster.failed_difficulty:
