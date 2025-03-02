@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from backend.difficulty import DifficultyAdjuster
+from .difficulty import DifficultyAdjuster
 
 router = APIRouter()
 difficulty_adjuster = DifficultyAdjuster()

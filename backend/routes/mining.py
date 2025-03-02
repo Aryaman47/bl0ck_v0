@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from backend.bl0ckchain.mining import set_mining_timeout
+from ..bl0ckchain.mining import set_mining_timeout
 
 router = APIRouter()
 

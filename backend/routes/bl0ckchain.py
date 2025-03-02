@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from backend.bl0ckchain.bl0ckchain import Blockchain
+from bl0ckchain.bl0ckchain import Blockchain
 
 router = APIRouter()
 blockchain = Blockchain()

@@ -1,8 +1,8 @@
 from fastapi import FastAPI, HTTPException
-from backend.bl0ckchain.bl0ckchain import Blockchain
-from backend.bl0ckchain.display import display_chain, last_block
-from backend.bl0ckchain.mining import set_mining_timeout
-from backend.difficulty import DifficultyAdjuster
+from bl0ckchain.bl0ckchain import Blockchain
+from bl0ckchain.display import display_chain, last_block
+from bl0ckchain.mining import set_mining_timeout
+from difficulty import DifficultyAdjuster
 
 app = FastAPI(title="The bl0ck 🔗 API")
 

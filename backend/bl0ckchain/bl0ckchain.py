@@ -1,7 +1,7 @@
 from .bl0ck import Block
 from .mining import mine_block
 from .storage import save_to_file, load_from_file
-from backend.difficulty import DifficultyAdjuster
+from difficulty import DifficultyAdjuster
 import datetime
 import time
 
