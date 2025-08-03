@@ -1,5 +1,3 @@
-import time
-
 class DifficultyAdjuster:
     def __init__(self, target_block_time=10, adjustment_interval=5, max_difficulty=10):
         """
