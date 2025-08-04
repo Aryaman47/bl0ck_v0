@@ -1,30 +1,29 @@
 # API calls via Powershell Terminal using curl.exe
 
-## Root Welcome 
+## 1. Root Welcome 
 `curl.exe https://127.0.0.1:8000/`
 
-## Get Entire Blockchain ⛓️🅱️⛓️
-### All Existing Bl0cks generated
+## 2. Get Entire Blockchain ⛓️🅱️⛓️
 `curl.exe http://127.0.0.1:8000/blockchain`
 
-## Add a New Block to the Bl0ckchain 🅱️✅
+## 3. Add a New Block to the Bl0ckchain 🅱️✅
 `curl.exe -X POST http://127.0.0.1:8000/blockchain/add`
 
-## Get the last (latest) Bl0ck added to the system 🔗🅱️
+## 4. Get the last (latest) Bl0ck added to the system 🔗🅱️
 `curl.exe -X POST http://127.0.0.1:8000/blockchin/last-block`
 
-## Enable DDM (Dynamic Difficulty Mode)
+## 5. Enable DDM (Dynamic Difficulty Mode)
 `curl.exe -X POST http://127.0.0.1:8000/difficulty/enable`
 
-# Disable DDM (Dynamic Difficulty Mode)
+# 6. Disable DDM (Dynamic Difficulty Mode)
 `curl.exe -X POST http://127.0.0.1:8000/difficulty/disable`
 
-# Set Manual Difficulty (1 - 10)
+# 7. Set Manual Difficulty (1 - 10)
 `curl.exe -X POST http://127.0.0.1:8000/difficulty/set-manual/4`
 
-# Switch to Auto Mode
+# 8. Switch to Auto Mode
 `curl.exe -X POST http://127.0.0.1:8000/difficulty/switch-to-auto`
 
-# Set Mining Timeout (10 - 300 seconds)
+# 9. Set Mining Timeout (10 - 300 seconds)
 
 `curl.exe -X POST http://127.0.0.1:8000/mining/set-timeout/{Replace-with-Timeout-Value-Here}`
