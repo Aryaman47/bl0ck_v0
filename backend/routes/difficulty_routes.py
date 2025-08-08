@@ -1,8 +1,8 @@
+#difficulty_routes.py
 from fastapi import APIRouter, HTTPException
-from bl0ckchain.bl0ckchain import Blockchain
+from singleton import blockchain  # <-- Use the shared instance
 
 router = APIRouter()
-blockchain = Blockchain()
 
 @router.post("/enable")
 async def enable_dynamic_difficulty():

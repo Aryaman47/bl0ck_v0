@@ -1,29 +1,32 @@
 # API calls via Powershell Terminal using curl.exe
 
+**_NOTE_** Execute ". ./profile-curl.ps1" to use cl and clPost to avoid using "curl.exe http://127.0.0.1:8000/" and "curl.exe -X POST http://127.0.0.1:8000/, respectively. Change the port number in profile-curl.ps1, in case the default is busy."
+
+
 ## 1. Root Welcome 
-`curl.exe http://127.0.0.1:8000/`
+`cl = curl.exe http://127.0.0.1:8000/`
 
 ## 2. Get Entire Blockchain ⛓️🅱️⛓️
-`curl.exe http://127.0.0.1:8000/blockchain/`
+`cl blockchain/ = curl.exe http://127.0.0.1:8000/blockchain/`
 
 ## 3. Add a New Block to the Bl0ckchain 🅱️✅
-`curl.exe -X POST http://127.0.0.1:8000/blockchain/add`
+`clPost blockchain/add = curl.exe -X POST http://127.0.0.1:8000/blockchain/add`
 
 ## 4. Get the last (latest) Bl0ck added to the system 🔗🅱️
-`curl.exe http://127.0.0.1:8000/blockchain/last-block`
+`cl blockchain/last-block = curl.exe http://127.0.0.1:8000/blockchain/last-block`
 
 ## 5. Enable DDM (Dynamic Difficulty Mode)
-`curl.exe -X POST http://127.0.0.1:8000/difficulty/enable`
+`clPost difficulty/enable = curl.exe -X POST http://127.0.0.1:8000/difficulty/enable`
 
 # 6. Disable DDM (Dynamic Difficulty Mode)
-`curl.exe -X POST http://127.0.0.1:8000/difficulty/disable`
+`clPost difficulty/disable = curl.exe -X POST http://127.0.0.1:8000/difficulty/disable`
 
 # 7. Set Manual Difficulty (1 - 10)
-`curl.exe -X POST http://127.0.0.1:8000/difficulty/set-manual/4`
+`clPost difficulty/set-manual/{Value} = curl.exe -X POST http://127.0.0.1:8000/difficulty/set-manual/{Value}`
 
 # 8. Switch to Auto Mode
-`curl.exe -X POST http://127.0.0.1:8000/difficulty/switch-to-auto`
+`clPost difficulty/switch-to-auto = curl.exe -X POST http://127.0.0.1:8000/difficulty/switch-to-auto`
 
 # 9. Set Mining Timeout (10 - 300 seconds)
 
-`curl.exe -X POST http://127.0.0.1:8000/mining/set-timeout/{Replace-with-Timeout-Value-Here}`
+`clPost mining/set-timeout/{Value} = curl.exe -X POST http://127.0.0.1:8000/mining/set-timeout/{Value}`

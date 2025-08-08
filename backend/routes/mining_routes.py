@@ -1,3 +1,4 @@
+# mining_routes.py
 from fastapi import APIRouter, HTTPException
 from bl0ckchain.mining import set_mining_timeout
 
