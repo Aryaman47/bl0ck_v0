@@ -1,5 +1,5 @@
 from .bl0ck import Block
-from .mining import mine_block, get_mining_timeout
+from .mining import mine_block, get_mining_timeout, set_mining_timeout
 from .storage import save_to_file, load_from_file
 from difficulty import DifficultyAdjuster
 import datetime
@@ -31,7 +31,7 @@ class Blockchain:
 
     def set_manual_difficulty(self, difficulty):
         if 1 <= difficulty <= 10:
-            self.difficulty_adjuster.difficulty = difficulty
+            self.difficulty_adjuster.set_difficulty(difficulty)
             self.manual_mode = True
             print(f"✅ Manual Difficulty Set: {difficulty} (DDM in Manual Mode)")
         else:
@@ -45,129 +45,113 @@ class Blockchain:
         self.manual_mode = False
         print("🔄 Switching back to Automatic Difficulty Adjustment!")
 
-        # If a failure occurred, start from a reduced difficulty
         if self.difficulty_adjuster.failed_difficulty:
-            new_difficulty = max(1, self.difficulty_adjuster.failed_difficulty - 1)
-            self.difficulty_adjuster.difficulty = new_difficulty
-            print(f"🔄 Adjusting difficulty to {new_difficulty} due to previous failure.")
+            new_diff = max(1, self.difficulty_adjuster.failed_difficulty - 1)
+            self.difficulty_adjuster.set_difficulty(new_diff)
+            print(f"🔄 Adjusting difficulty to {new_diff} due to previous failure.")
 
     def add_block(self):
         last_block = self.chain[-1]
-
-        # Use difficulty from adjuster if dynamic or manual mode, else default to 1
-        original_difficulty = (
+        base_difficulty = (
             self.difficulty_adjuster.difficulty
             if self.dynamic_difficulty_enabled or self.manual_mode
             else 1
         )
 
-        # We'll attempt retries only when Dynamic Difficulty Mode (DDM = Dynamic Difficulty Mode) is enabled AND we're in auto mode (not manual).
-        advanced_retry = self.dynamic_difficulty_enabled and (not self.manual_mode)
+        # Check if difficulty is blocked by fail count blacklist
+        max_allowed_diff = base_difficulty
+        if self.difficulty_adjuster.blocked_thresholds:
+            max_block = min(self.difficulty_adjuster.blocked_thresholds)
+            if base_difficulty >= max_block:
+                max_allowed_diff = max(1, max_block - 1)
+                print(f"[DEBUG] Difficulty {base_difficulty} blocked, limiting to {max_allowed_diff}")
 
-        attempt_difficulty = original_difficulty
-        temporary_timeout = None  # used when we temporarily increase timeout for a session-span
+        current_timeout = get_mining_timeout()
+        fail_count = self.difficulty_adjuster.get_failure_count(base_difficulty)
 
-        while True:
-            new_block = Block(
+        # Function to attempt mining with a specific difficulty and timeout
+        def attempt_mine(difficulty, timeout):
+            block = Block(
                 index=last_block.index + 1,
                 timestamp=str(datetime.datetime.now()),
                 data=f"Block {last_block.index + 1}",
                 previous_hash=last_block.hash,
-                difficulty=attempt_difficulty
+                difficulty=difficulty,
             )
+            mined_hash, mining_time = mine_block(block, timeout)
+            return block, mined_hash, mining_time
 
-            # Mining process (supports per-attempt timeout)
-            new_block.hash, mining_time = mine_block(new_block, timeout=temporary_timeout)
-
-            # Handle mining failure
-            if new_block.hash is None:
-                print(f"❌ [DEBUG] Mining failed! Difficulty {attempt_difficulty} exceeded timeout.")
-
-                # If not in advanced retry mode, just record the failure and exit
-                if not advanced_retry:
-                    self.difficulty_adjuster.track_failed_difficulty(attempt_difficulty)
-                    return  # Exit without appending
-
-                # Advanced retry logic for DDM auto-mode:
-                fail_count = self.difficulty_adjuster.increment_failure_count(attempt_difficulty)
-                # Record as last failed difficulty (legacy field)
-                self.difficulty_adjuster.track_failed_difficulty(attempt_difficulty)
-
-                # If fail_count in 1..3: decrement locally and retry immediately (do not persistally change authoritative difficulty)
-                if fail_count <= 3:
-                    if attempt_difficulty > 1:
-                        attempt_difficulty -= 1
-                        temporary_timeout = None  # reset to default for immediate retries
-                        print(f"🔽 Decrementing difficulty to {attempt_difficulty} and retrying (FailCount={fail_count})...")
-                        continue
-                    else:
-                        print("⚠️ Cannot decrement below difficulty 1; aborting attempt.")
-                        return
-
-                # If fail_count == 4: increase timeout temporarily and retry at same difficulty
-                if fail_count == 4:
-                    base_timeout = get_mining_timeout()
-                    increased_timeout = base_timeout + 60  # extra 60 seconds as per spec
-                    temporary_timeout = increased_timeout
-                    print(f"⏳ FailCount==4 for difficulty {attempt_difficulty}. Increasing timeout to {temporary_timeout}s and retrying...")
-                    # Next loop iteration will attempt mining at the same attempt_difficulty with the larger timeout
-                    continue
-
-                # If fail_count >= 5 (i.e., the increased-timeout attempt also failed): block this difficulty and above for the current session and set max difficulty to attempt_difficulty-1
-                if fail_count >= 5:
-                    # Block auto increases into this difficulty (and above) for the remainder of the session
-                    self.difficulty_adjuster.block_from_difficulty(attempt_difficulty)
-                    # Lower the authoritative difficulty to the next lower value (so new difficulty won't be set back to attempt_difficulty)
-                    new_committed = max(1, attempt_difficulty - 1)
-                    self.difficulty_adjuster.set_difficulty(new_committed)
-                    print(f"🚫 After repeated failures, blocking difficulty {attempt_difficulty} and above for this session; set max difficulty to {new_committed}.")
-                    self.difficulty_adjuster.failed_difficulty = attempt_difficulty
-                    return
-
-            # ----------------- SUCCESS PATH -----------------
-            new_block.mining_time = round(mining_time, 2)
-            print(f"⏳ [DEBUG] Mining Time: {new_block.mining_time}s")
-
-            # If we were in advanced retry mode and we succeeded at a lower difficulty than the original target
-            # we MUST NOT reset the failure count for that original difficulty (per your spec), and we MUST keep
-            # the authoritative difficulty (so next call still begins with original_difficulty).
-            if advanced_retry and attempt_difficulty != original_difficulty:
-                # Keep failure count as-is. Restore the authoritative difficulty value to original so
-                # next add attempts start from the "new difficulty" user expects.
-                self.difficulty_adjuster.difficulty = original_difficulty
-                print(f"🔼 Success at lower difficulty {attempt_difficulty}; keeping target difficulty at {original_difficulty} (FailCount preserved).")
+        # If fail count > 3 for this difficulty, try once with increased timeout before blacklisting
+        if fail_count > 3:
+            print(f"[DEBUG] FailCount > 3 for difficulty {base_difficulty}, increasing timeout and retrying")
+            block, mined_hash, mining_time = attempt_mine(base_difficulty, current_timeout + 60)
+            if mined_hash is None:
+                # blacklist difficulty - do not allow increment to this or beyond
+                self.difficulty_adjuster.block_from_difficulty(base_difficulty)
+                # set current difficulty to base_difficulty -1 as upper limit
+                new_diff = max(1, base_difficulty - 1)
+                self.difficulty_adjuster.set_difficulty(new_diff)
+                self.difficulty_adjuster.reset_failure_count(base_difficulty)
+                print(f"[DEBUG] Blacklisting difficulty {base_difficulty}. Limiting max difficulty to {new_diff}.")
+                return None  # fail without adding block
             else:
-                # If success at the original difficulty, we can clear its failure counter (optional; keeps behaviour sane).
-                # You can remove this reset if you prefer to keep success/failure counters across successes too.
-                if advanced_retry:
-                    self.difficulty_adjuster.reset_failure_count(attempt_difficulty)
+                # success with increased timeout, reset fail count and continue
+                self.difficulty_adjuster.reset_failure_count(base_difficulty)
+                block.mining_time = round(mining_time, 2)
+                self.chain.append(block)
+                save_to_file(self.chain)
+                # difficulty stays same, no increment for next round
+                print(f"\n✅ Block {block.index} added! Difficulty: {block.difficulty} (with increased timeout)")
+                return block
 
-            # Record mining time and adjust difficulty if DDM is enabled
-            if self.dynamic_difficulty_enabled:
-                # Use the existing record_block_time behavior
-                self.difficulty_adjuster.record_block_time(new_block.mining_time)
+        # Normal mining flow: try base difficulty, if fail decrement once and retry
+        block, mined_hash, mining_time = attempt_mine(base_difficulty, current_timeout)
+        if mined_hash is None:
+            # Mining failed at base difficulty
+            fail_count = self.difficulty_adjuster.increment_failure_count(base_difficulty)
 
-                # Keep only the last `adjustment_interval` block times (handled by record_block_time)
-                new_difficulty = self.difficulty_adjuster.adjust_difficulty()
-                print(f"⚙️ [DEBUG] Adjusted Difficulty: {new_difficulty}")
+            # Retry at one difficulty lower if possible
+            retry_diff = max(1, base_difficulty - 1)
+            print(f"[DEBUG] Mining failed at difficulty {base_difficulty}, retrying at {retry_diff} (FailCount={fail_count})")
 
-                # Additional safety: if there exists a fail count for the original difficulty, do not allow the adjuster to jump beyond original_difficulty
-                if self.difficulty_adjuster.get_failure_count(original_difficulty) > 0:
-                    # Force it back to original_difficulty (so we don't skip upward while a failure count exists)
-                    self.difficulty_adjuster.set_difficulty(original_difficulty)
-                    print(f"[DEBUG] Prevented auto-increment due to existing FailCount for difficulty {original_difficulty}.")
+            block_retry, mined_hash_retry, mining_time_retry = attempt_mine(retry_diff, current_timeout)
+            if mined_hash_retry is None:
+                # Fail again at retry difficulty, do NOT increment fail count again for retry difficulty
+                print(f"[DEBUG] Mining also failed at retry difficulty {retry_diff}.")
+                return None  # give up, do not add block
 
-                # Clear failed_difficulty legacy field if recovery is implied
-                if self.difficulty_adjuster.failed_difficulty:
-                    if attempt_difficulty < self.difficulty_adjuster.failed_difficulty:
-                        # If we succeeded at a lower difficulty and previously had a failed difficulty, attempt small recovery
-                        self.difficulty_adjuster.difficulty = min(self.difficulty_adjuster.max_difficulty, self.difficulty_adjuster.difficulty + 1)
-                        print(f"🔼 Increasing difficulty to {self.difficulty_adjuster.difficulty}.")
-                    self.difficulty_adjuster.failed_difficulty = None  # Reset after recovery
+            else:
+                # Retry succeeded: keep fail count for base difficulty, reset for retry difficulty if any
+                self.difficulty_adjuster.reset_failure_count(retry_diff)
+                block_retry.mining_time = round(mining_time_retry, 2)
+                self.chain.append(block_retry)
+                save_to_file(self.chain)
 
-            # Append and save the new block
-            self.chain.append(new_block)
+                # Keep fail count for base difficulty, but difficulty stays at base difficulty for next round (no increment)
+                print(f"\n✅ Block {block_retry.index} added! Difficulty: {retry_diff} (Retry success, fail count kept at {fail_count})")
+
+                # Keep difficulty at base difficulty for next call (do not increment to base_difficulty + 1)
+                self.difficulty_adjuster.set_difficulty(base_difficulty)
+                return block_retry
+
+        else:
+            # Mining succeeded at base difficulty
+            block.mining_time = round(mining_time, 2)
+            self.chain.append(block)
             save_to_file(self.chain)
 
-            print(f"\n✅ Block {new_block.index} added! Difficulty: {new_block.difficulty}")
-            return new_block
+            # Reset fail count on success for this difficulty
+            self.difficulty_adjuster.reset_failure_count(base_difficulty)
+
+            # Increment difficulty for next round, but respect blacklist limits
+            new_difficulty = base_difficulty + 1
+            if self.difficulty_adjuster.blocked_thresholds:
+                min_block = min(self.difficulty_adjuster.blocked_thresholds)
+                if new_difficulty >= min_block:
+                    new_difficulty = max(1, min_block - 1)
+
+            self.difficulty_adjuster.set_difficulty(new_difficulty)
+
+            print(f"\n✅ Block {block.index} added! Difficulty: {block.difficulty}")
+            print(f"[DEBUG] Difficulty incremented to {new_difficulty} for next round.")
+            return block
