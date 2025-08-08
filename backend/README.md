@@ -1,16 +1,16 @@
 # API calls via Powershell Terminal using curl.exe
 
 ## 1. Root Welcome 
-`curl.exe https://127.0.0.1:8000/`
+`curl.exe http://127.0.0.1:8000/`
 
 ## 2. Get Entire Blockchain ⛓️🅱️⛓️
-`curl.exe http://127.0.0.1:8000/blockchain`
+`curl.exe http://127.0.0.1:8000/blockchain/`
 
 ## 3. Add a New Block to the Bl0ckchain 🅱️✅
 `curl.exe -X POST http://127.0.0.1:8000/blockchain/add`
 
 ## 4. Get the last (latest) Bl0ck added to the system 🔗🅱️
-`curl.exe -X POST http://127.0.0.1:8000/blockchin/last-block`
+`curl.exe http://127.0.0.1:8000/blockchain/last-block`
 
 ## 5. Enable DDM (Dynamic Difficulty Mode)
 `curl.exe -X POST http://127.0.0.1:8000/difficulty/enable`
