@@ -16,37 +16,3 @@ body {
   font-family: PixelFont;
   color: rgb(255, 255, 255);
 }
-#container3D{
-  position: fixed;
-  inset: 0;
-  background-color:rgba(0, 0, 0, 0.2);
-  z-index: 100;
-  pointer-events: none;
-}
-
-
-
-/* #controls {
-  position: absolute;
-  bottom: 30px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 1;
-} */
-/* 
-button {
-  font-size: 30px;
-  margin: 0 20px;
-  padding: 10px 20px;
-  cursor: pointer;
-  background: #222;
-  color: #fff;
-  border: none;
-  border-radius: 10px;
-  transition: background 0.2s;
-}
-
-button:hover {
-  background: #444;
-} */
-
