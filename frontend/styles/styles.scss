@@ -1,25 +1,165 @@
-body {
-  margin: 0;
-  overflow: hidden;
-  background: #000000;
-}
-
+/* styles.css - compiled simple styles based on your SCSS */
 @font-face {
   font-family: 'PixelFont';
   src: url('/fonts/PixelFont.ttf') format('truetype');
 }
 
-
-.title{
-  position: fixed;
-  top: 2%;
-  left: 50%;
-  width: 95%;
-  transform: translateX(-50%);
-  
-  font-family: PixelFont;
-  font-size: 1.5em;
-  text-align: center;
-  
-  color: rgb(255, 255, 255);
+:root {
+  --bg: #0b0b0b;
+  --card: #111111;
+  --muted: #9a9a9a;
+  --accent: #1f8feb;
+  --white: #fff;
 }
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--white);
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.container {
+  padding: 18px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.card {
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  border: 1px solid rgba(255,255,255,0.06);
+  padding: 12px;
+  border-radius: 8px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.title {
+  font-family: PixelFont, monospace;
+  font-size: 1.2rem;
+  letter-spacing: 1px;
+}
+
+.mode-status {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.mode-status .switch {
+  display: inline-block;
+  width: 44px;
+  height: 24px;
+  position: relative;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: #4a4a4a;
+  transition: .25s;
+  border-radius: 24px;
+}
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  top: 3px;
+  background-color: white;
+  transition: .25s;
+  border-radius: 50%;
+}
+input:checked + .slider {
+  background-color: #2b8cff;
+}
+input:checked + .slider:before {
+  transform: translateX(20px);
+}
+
+.main {
+  display: flex;
+  gap: 16px;
+}
+.left-panel {
+  width: 360px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.right-panel {
+  flex: 1;
+  min-height: 360px;
+}
+
+.panel-title {
+  font-weight: 700;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+
+.controls button,
+.ddm-controls button,
+#btnSetTimeout {
+  width: 100%;
+  padding: 8px;
+  margin: 6px 0;
+  background: transparent;
+  color: var(--white);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 6px;
+  cursor: pointer;
+}
+.controls button:hover,
+.ddm-controls button:hover,
+#btnSetTimeout:hover {
+  border-color: var(--accent);
+  box-shadow: 0 2px 10px rgba(31,139,235,0.06);
+}
+.timeout-controls input,
+.ddm-controls input {
+  width: 100%;
+  padding: 8px;
+  margin: 6px 0;
+  border-radius: 6px;
+  border: 1px solid rgba(255,255,255,0.06);
+  background: rgba(255,255,255,0.01);
+  color: var(--white);
+}
+
+.output {
+  white-space: pre-wrap;
+  font-family: monospace;
+  font-size: 0.95rem;
+  color: var(--muted);
+  height: 100%;
+  overflow: auto;
+  padding: 12px;
+  border-radius: 6px;
+  border: 1px dashed rgba(255,255,255,0.03);
+  background: rgba(255,255,255,0.01);
+}
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.muted { color: var(--muted); font-size: 0.9rem; }
