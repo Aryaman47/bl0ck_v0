@@ -15,7 +15,7 @@ The project implements blockchain API to allow one to perform the following basi
 - Stores the blocks added into a JSON file called blockchain_data.json
 ---
 
-> **_NOTE_** *Currently, the project utilizes Python's `hashlib` library to implement `SHA256` algorithm to hash the generated blocks.*
+> **_NOTE_** *Currently, the project utilizes Python's [`hashlib`](https://docs.python.org/3/library/hashlib.html) library to implement [`SHA256`](https://docs.python.org/3/library/hashlib.html#hashlib.shake_256) algorithm to hash the generated blocks.*
 
 ---
 
@@ -25,7 +25,7 @@ Apart from the above mentioned-existing basic operations-analogous to an actual 
 
 ---
 
-> **_NOTE_** *To begin setup and eventually test the project, clone the entire project and refer to the [`README.md`](https://github.com/Aryaman47/bl0ck_v0/blob/main/backend/README.md) in the `backend/` repository.*
+> **_NOTE_** *To begin setup and eventually test the project, clone the entire project and refer to the [`README.md`](https://github.com/Aryaman47/bl0ck_v0/blob/main/backend/README.md) in the [`backend/`](https://github.com/Aryaman47/bl0ck_v0/blob/main/backend/) repository.*
 
 ---
 
@@ -34,7 +34,7 @@ This modes allows the provides the following functionalities:
 - Toggle between DDM or SM {Standard Mode (Non-DDM)}.
 - In SM, the difficulty: 1 & Nonce: 0 (by default).
 - After enabling DDM (`difficulty` auto-increments by default),
-    1. It starts at `difficulty = 2` and increments with each new block added.
+    1. It starts at `difficulty = 2` and increments with each new block that is generated.
     2. Difficulty can be set manually, **inclusively between 1 to 10**.
     3. Using `set-manual`, the `difficulty` halts at the `set-manual = {customValue}` until `switch-to-auto` is called.
     5. The `switch-to-auto` allows to **revert back to auto-increment mode** from manual-difficulty mode.
