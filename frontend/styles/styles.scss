@@ -8,11 +8,18 @@ body {
   font-family: 'PixelFont';
   src: url('/fonts/PixelFont.ttf') format('truetype');
 }
+
+
 .title{
   position: fixed;
-  top: 5%;
+  top: 2%;
   left: 50%;
+  width: 95%;
   transform: translateX(-50%);
+  
   font-family: PixelFont;
+  font-size: 1.5em;
+  text-align: center;
+  
   color: rgb(255, 255, 255);
 }
