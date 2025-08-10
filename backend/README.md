@@ -18,15 +18,15 @@
 ## 5. Enable DDM (Dynamic Difficulty Mode)
 `clPost difficulty/enable = curl.exe -X POST http://127.0.0.1:8000/difficulty/enable`
 
-# 6. Disable DDM (Dynamic Difficulty Mode)
+## 6. Disable DDM (Dynamic Difficulty Mode)
 `clPost difficulty/disable = curl.exe -X POST http://127.0.0.1:8000/difficulty/disable`
 
-# 7. Set Manual Difficulty (1 - 10)
+## 7. Set Manual Difficulty (1 - 10)
 `clPost difficulty/set-manual/{Value} = curl.exe -X POST http://127.0.0.1:8000/difficulty/set-manual/{Value}`
 
-# 8. Switch to Auto Mode
+## 8. Switch to Auto Mode
 `clPost difficulty/switch-to-auto = curl.exe -X POST http://127.0.0.1:8000/difficulty/switch-to-auto`
 
-# 9. Set Mining Timeout (10 - 300 seconds)
+## 9. Set Mining Timeout (10 - 300 seconds)
 
 `clPost mining/set-timeout/{Value} = curl.exe -X POST http://127.0.0.1:8000/mining/set-timeout/{Value}`
