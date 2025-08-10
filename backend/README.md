@@ -26,12 +26,13 @@ Open new terminal and execute the following: (Optional but Recommended)
     . ./profile-curl.ps1
 
 Follow the list of API calls mentioned below
+
+## API calls via Powershell Terminal using curl.exe
 ---
 
 > **_NOTE_** *Execute `. ./profile-curl.ps1` to use `cl` and `clPost` to avoid using `curl.exe http://127.0.0.1:8000/` and `curl.exe -X POST http://127.0.0.1:8000/`, respectively. Change the port number in profile-curl.ps1, in case the default is busy.*
 
 ---
-## API calls via Powershell Terminal using curl.exe
 ### Root Welcome 
     curl.exe http://127.0.0.1:8000/
 
