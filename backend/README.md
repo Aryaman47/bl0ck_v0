@@ -1,32 +1,76 @@
-# API calls via Powershell Terminal using curl.exe
+# Project Setup (Windows)
+Make sure that Python (>=3.10) is installed in the system. Otherwise install it and add it to path (environment variables). 
+Create a virtual environment within the `path/to/bl0ck_v0`
 
-**_NOTE_** Execute ". ./profile-curl.ps1" to use cl and clPost to avoid using "curl.exe http://127.0.0.1:8000/" and "curl.exe -X POST http://127.0.0.1:8000/, respectively. Change the port number in profile-curl.ps1, in case the default is busy."
+    python -m venv venv_name
+
+Enter the virtual environment using:
+
+    venv_name/Scripts/activate
 
 
-## 1. Root Welcome 
-`cl = curl.exe http://127.0.0.1:8000/`
+## Download Dependencies
+The project uses fastAPI to make API requests and uvicorn to load the frontend in development environment, locally. Download fastAPI using:
 
-## 2. Get Entire Blockchain ⛓️🅱️⛓️
-`cl blockchain/ = curl.exe http://127.0.0.1:8000/blockchain/`
+    pip install fastapi uvicorn
 
-## 3. Add a New Block to the Bl0ckchain 🅱️✅
-`clPost blockchain/add = curl.exe -X POST http://127.0.0.1:8000/blockchain/add`
 
-## 4. Get the last (latest) Bl0ck added to the system 🔗🅱️
-`cl blockchain/last-block = curl.exe http://127.0.0.1:8000/blockchain/last-block`
+## Project Launch
+Once the virtual environment has been activated, executed the following commands in powershell terminal of VS Code:
+    
+    cd backend
+    uvicorn main:app --reload
 
-## 5. Enable DDM (Dynamic Difficulty Mode)
-`clPost difficulty/enable = curl.exe -X POST http://127.0.0.1:8000/difficulty/enable`
+Open new terminal and execute the following: (Optional but Recommended)
+   
+    . ./profile-curl.ps1
 
-## 6. Disable DDM (Dynamic Difficulty Mode)
-`clPost difficulty/disable = curl.exe -X POST http://127.0.0.1:8000/difficulty/disable`
+Follow the list of API calls mentioned below
+---
 
-## 7. Set Manual Difficulty (1 - 10)
-`clPost difficulty/set-manual/{Value} = curl.exe -X POST http://127.0.0.1:8000/difficulty/set-manual/{Value}`
+> **_NOTE_** *Execute `. ./profile-curl.ps1` to use `cl` and `clPost` to avoid using `curl.exe http://127.0.0.1:8000/` and `curl.exe -X POST http://127.0.0.1:8000/`, respectively. Change the port number in profile-curl.ps1, in case the default is busy.*
 
-## 8. Switch to Auto Mode
-`clPost difficulty/switch-to-auto = curl.exe -X POST http://127.0.0.1:8000/difficulty/switch-to-auto`
+---
+## API calls via Powershell Terminal using curl.exe
+### Root Welcome 
+    curl.exe http://127.0.0.1:8000/
 
-## 9. Set Mining Timeout (10 - 300 seconds)
+### Get Entire Blockchain ⛓️🅱️⛓️
+    cl blockchain/ 
+---
+    curl.exe http://127.0.0.1:8000/blockchain/
 
-`clPost mining/set-timeout/{Value} = curl.exe -X POST http://127.0.0.1:8000/mining/set-timeout/{Value}`
+### Add a New Block to the Bl0ckchain 🅱️✅
+    clPost blockchain/add
+---
+    curl.exe -X POST http://127.0.0.1:8000/blockchain/add
+
+### Get the last (latest) Bl0ck added to the system 🔗🅱️
+    cl blockchain/last-block 
+---
+    curl.exe http://127.0.0.1:8000/blockchain/last-block
+
+### Enable DDM (Dynamic Difficulty Mode) ⛓️🔄️✅
+    clPost difficulty/enable
+---
+    curl.exe -X POST http://127.0.0.1:8000/difficulty/enable
+
+### Disable DDM (Dynamic Difficulty Mode) ⛓️🔄️❎
+    clPost difficulty/disable
+---
+    curl.exe -X POST http://127.0.0.1:8000/difficulty/disable
+
+### Set Manual Difficulty (1 - 10) 1️⃣-🔟
+    clPost difficulty/set-manual/{Value}
+---
+    curl.exe -X POST http://127.0.0.1:8000/difficulty/set-manual/{Value}
+
+### Switch to Auto Mode 🔄️✅
+    clPost difficulty/switch-to-auto
+---
+    curl.exe -X POST http://127.0.0.1:8000/difficulty/switch-to-auto
+
+### Set Mining Timeout (10 - 300 seconds) 🕛⁉️
+    clPost mining/set-timeout/{Value}
+---
+    curl.exe -X POST http://127.0.0.1:8000/mining/set-timeout/{Value}
