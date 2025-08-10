@@ -1,3 +1,4 @@
+# main.py
 from fastapi import FastAPI
 from routes import bl0ckchain_routes, difficulty_routes, mining_routes
 

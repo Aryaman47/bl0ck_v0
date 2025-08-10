@@ -1,3 +1,4 @@
+# display.py
 def display_chain(chain):
     """Return the entire blockchain as a list of dictionaries."""
     if not chain:

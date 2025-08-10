@@ -1,3 +1,4 @@
+# mining.py
 import time
 from .bl0ck import Block
 

@@ -1,3 +1,4 @@
+# bl0ckchain.py
 from .bl0ck import Block
 from .mining import mine_block, get_mining_timeout, set_mining_timeout
 from .storage import save_to_file, load_from_file
