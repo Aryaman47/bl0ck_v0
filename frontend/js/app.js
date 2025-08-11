@@ -1,6 +1,7 @@
 // app.js - UI logic and backend integration
+// (Updated: initializes from GET /status)
 
-const API_BASE = ""; // empty => same origin; served from same uvicorn server (/) when backend mounts frontend
+const API_BASE = ""; // same origin
 
 // UI elements
 const btnBlockchain = document.getElementById("btnBlockchain");
@@ -22,11 +23,12 @@ const btnAuto = document.getElementById("btnAuto");
 const btnSetManual = document.getElementById("btnSetManual");
 const manualDifficulty = document.getElementById("manualDifficulty");
 
-// Local UI state mirrors server state where useful
+// Local UI state (will be initialized from server /status)
 let state = {
   ddmEnabled: false,
-  ddmMode: "auto", // "auto" or "manual"
+  ddmMode: "auto",
   timeout: 60,
+  difficulty: 1,
 };
 
 // Helpers
@@ -35,7 +37,7 @@ function setOutput(text, append = false) {
   else output.textContent += "\n" + text;
 }
 function setLastAction(text) {
-  lastAction.textContent = text;
+  if (lastAction) lastAction.textContent = text;
 }
 function errToOutput(e) {
   setOutput("Error: " + (e.message || e));
@@ -49,7 +51,12 @@ async function apiGet(path) {
     const txt = await res.text();
     throw new Error(`${res.status} ${res.statusText} - ${txt}`);
   }
-  return res.json();
+  // some endpoints return plain text on error; try json
+  try {
+    return await res.json();
+  } catch {
+    return {};
+  }
 }
 
 async function apiPost(path) {
@@ -58,42 +65,60 @@ async function apiPost(path) {
     const txt = await res.text();
     throw new Error(`${res.status} ${res.statusText} - ${txt}`);
   }
-  return res.json();
+  try {
+    return await res.json();
+  } catch {
+    return {};
+  }
 }
 
 // UI update functions
 function showDDMControls(show) {
-  ddmControls.style.display = show ? "block" : "none";
+  if (ddmControls) ddmControls.style.display = show ? "block" : "none";
 }
 
 function updateModeLabels() {
-  globalMode.textContent = state.ddmEnabled ? "DDM" : "Standard";
-  ddmSubstatus.textContent = state.ddmEnabled ? `DDM: Enabled (${state.ddmMode})` : "DDM: Disabled";
-  ddmToggle.checked = state.ddmEnabled;
-  showDDMControls(state.ddmEnabled);
+  if (globalMode) globalMode.textContent = state.ddmEnabled ? "DDM" : "Standard";
+  if (ddmSubstatus) ddmSubstatus.textContent = state.ddmEnabled ? `DDM: Enabled (${state.ddmMode})` : "DDM: Disabled";
+  if (ddmToggle) ddmToggle.checked = !!state.ddmEnabled;
+  showDDMControls(!!state.ddmEnabled);
+
+  // update timeout UI
+  if (timeoutDisplay) timeoutDisplay.textContent = state.timeout;
+  if (timeoutInput) timeoutInput.value = state.timeout;
 }
 
-// Initialize: fetch current timeout from mining module by reading client-side fallback
-// Your backend doesn't expose a GET timeout endpoint, so we use the client-side default in mining.py.
-// We'll try to show the current value known client-side by asking the server via a cheap add-and-cancel? 
-// To keep it simple: read default at load (60) and let user set.
-function init() {
-  updateModeLabels();
-  timeoutDisplay.textContent = state.timeout;
-  timeoutInput.value = state.timeout;
-  setOutput("Ready. Click 'Get Blockchain' or 'Last Block' or 'New Block'.");
-  setLastAction("Idle");
+// Initialize from server /status
+async function init() {
+  setOutput("Initializing from server...");
+  setLastAction("Initializing");
+  try {
+    const s = await apiGet("/status");
+    // Expecting { ddm_enabled, ddm_mode, timeout, difficulty, failed_difficulty }
+    state.ddmEnabled = !!s.ddm_enabled;
+    state.ddmMode = s.ddm_mode || "auto";
+    state.timeout = s.timeout || state.timeout;
+    state.difficulty = s.difficulty || state.difficulty;
+    updateModeLabels();
+
+    setOutput(`Status loaded from server.\nDDM: ${state.ddmEnabled} (${state.ddmMode})\nTimeout: ${state.timeout}s\nDifficulty: ${state.difficulty}`);
+    setLastAction("Ready");
+  } catch (err) {
+    // If /status not available, fallback to defaults
+    setOutput("Could not fetch /status from server. Falling back to defaults.\n" + (err.message || err));
+    setLastAction("Init failed (fallback)");
+    updateModeLabels();
+  }
 }
 
 init();
 
 // Events
-ddmToggle.addEventListener("change", async (e) => {
+if (ddmToggle) ddmToggle.addEventListener("change", async (e) => {
   try {
     if (e.target.checked) {
       await apiPost("/difficulty/enable");
       state.ddmEnabled = true;
-      // default to auto when enabled
       state.ddmMode = "auto";
       setOutput("Dynamic Difficulty Mode enabled.");
       setLastAction("Enabled DDM");
@@ -107,55 +132,62 @@ ddmToggle.addEventListener("change", async (e) => {
     updateModeLabels();
   } catch (err) {
     errToOutput(err);
-    ddmToggle.checked = !e.target.checked; // revert UI on failure
+    // revert UI toggle
+    e.target.checked = !e.target.checked;
   }
 });
 
-btnBlockchain.addEventListener("click", async () => {
+if (btnBlockchain) btnBlockchain.addEventListener("click", async () => {
   setLastAction("Fetching blockchain...");
   try {
     const data = await apiGet("/blockchain/");
-    setOutput(JSON.stringify(data.blockchain, null, 2));
+    setOutput(JSON.stringify(data.blockchain || data, null, 2));
     setLastAction("Fetched blockchain");
   } catch (err) {
     errToOutput(err);
   }
 });
 
-btnLastBlock.addEventListener("click", async () => {
+if (btnLastBlock) btnLastBlock.addEventListener("click", async () => {
   setLastAction("Fetching last block...");
   try {
     const block = await apiGet("/blockchain/last-block");
-    setOutput(JSON.stringify(block, null, 2));
+    setOutput(JSON.stringify(block || {}, null, 2));
     setLastAction("Fetched last block");
   } catch (err) {
     errToOutput(err);
   }
 });
 
-btnNewBlock.addEventListener("click", async () => {
+if (btnNewBlock) btnNewBlock.addEventListener("click", async () => {
   setLastAction("Adding new block...");
   try {
-    // POST to add block
     const res = await apiPost("/blockchain/add");
     if (res.error) {
       setOutput("Block mining failed: " + JSON.stringify(res, null, 2));
       setLastAction("Block mining failed");
-      // Optionally show last failed difficulty
+      // optionally update failed_difficulty display if server returns it
       return;
     }
-    setOutput("Block added:\n" + JSON.stringify(res, null, 2));
+    setOutput("Block add response:\n" + JSON.stringify(res, null, 2));
     setLastAction("Block added, fetching last block...");
-    // Fetch last block to refresh dataset
+    // fetch last block to display actual stored block
     const last = await apiGet("/blockchain/last-block");
-    setOutput(JSON.stringify(last, null, 2));
+    setOutput(JSON.stringify(last || {}, null, 2));
     setLastAction("Last block displayed");
+    // refresh server state (timeout/difficulty) after successful add
+    try {
+      const s = await apiGet("/status");
+      state.timeout = s.timeout || state.timeout;
+      state.difficulty = s.difficulty || state.difficulty;
+      updateModeLabels();
+    } catch (_) { /* ignore */ }
   } catch (err) {
     errToOutput(err);
   }
 });
 
-btnSetTimeout.addEventListener("click", async () => {
+if (btnSetTimeout) btnSetTimeout.addEventListener("click", async () => {
   const v = Number(timeoutInput.value);
   if (!v || v < 10 || v > 300) {
     alert("Timeout must be a number between 10 and 300 seconds.");
@@ -174,7 +206,7 @@ btnSetTimeout.addEventListener("click", async () => {
 });
 
 // DDM controls
-btnAuto.addEventListener("click", async () => {
+if (btnAuto) btnAuto.addEventListener("click", async () => {
   if (!state.ddmEnabled) {
     alert("Enable DDM first (toggle the switch).");
     return;
@@ -190,7 +222,7 @@ btnAuto.addEventListener("click", async () => {
   }
 });
 
-btnSetManual.addEventListener("click", async () => {
+if (btnSetManual) btnSetManual.addEventListener("click", async () => {
   if (!state.ddmEnabled) {
     alert("Enable DDM first.");
     return;
@@ -201,9 +233,9 @@ btnSetManual.addEventListener("click", async () => {
     return;
   }
   try {
-    // This endpoint expects DDM to be enabled; it will set manual difficulty and toggle Manual mode on the backend behavior
     await apiPost(`/difficulty/set-manual/${d}`);
     state.ddmMode = "manual";
+    state.difficulty = d;
     updateModeLabels();
     setOutput(`Manual difficulty set to ${d}.`);
     setLastAction(`Manual difficulty ${d}`);

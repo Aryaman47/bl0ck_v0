@@ -5,7 +5,7 @@
 }
 
 :root {
-  --bg: #0b0b0b;
+  --bg: #1a1a1a;
   --card: #111111;
   --muted: #9a9a9a;
   --accent: #1f8feb;
@@ -17,14 +17,19 @@ body {
   margin: 0;
   background: var(--bg);
   color: var(--white);
-  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+  
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  
+  font-family: PixelFont, monospace, 'Roboto', 'Helvetica Neue';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 .container {
   padding: 18px;
-  min-height: 100vh;
+  height: 100%;
   display: flex;
   flex-direction: column;
   gap: 18px;
@@ -39,9 +44,14 @@ body {
 
 .header {
   display: flex;
-  justify-content: space-between;
+  justify-content: center; /* center the h1 horizontally */
   align-items: center;
+  text-align: center;
   gap: 12px;
+}
+
+.header h1 {
+  margin: 0 auto; /* keep h1 centered */
 }
 
 .title {
@@ -54,11 +64,12 @@ body {
   display: flex;
   align-items: center;
   gap: 12px;
+  margin-top: 4px; /* aligns better with .panel-title */
 }
 
 .mode-status .switch {
   display: inline-block;
-  width: 44px;
+  width: 42px;
   height: 24px;
   position: relative;
 }
@@ -97,24 +108,35 @@ input:checked + .slider:before {
 .main {
   display: flex;
   gap: 16px;
+  height: calc(100vh - 150px); /* Ensures panels fit without scrolling the whole page */
 }
+
 .left-panel {
   width: 360px;
   display: flex;
   flex-direction: column;
   gap: 12px;
+  flex-shrink: 0; /* Prevent shrinking when right panel scrolls */
 }
+
 .right-panel {
   flex: 1;
-  min-height: 360px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* Keep panel height fixed */
 }
 
 .panel-title {
   font-weight: 700;
-  color: var(--muted);
+  color: var(--white);
   margin-bottom: 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
-
+button{
+  font-family: PixelFont, monospace;
+}
 .controls button,
 .ddm-controls button,
 #btnSetTimeout {
@@ -146,11 +168,11 @@ input:checked + .slider:before {
 
 .output {
   white-space: pre-wrap;
-  font-family: monospace;
+  font-family: PixelFont, monospace;
   font-size: 0.95rem;
-  color: var(--muted);
-  height: 100%;
-  overflow: auto;
+  color: var(--white);
+  flex: 1; /* fills available space in right-panel */
+  overflow-y: auto; /* scroll only inside output */
   padding: 12px;
   border-radius: 6px;
   border: 1px dashed rgba(255,255,255,0.03);
@@ -162,4 +184,4 @@ input:checked + .slider:before {
   justify-content: space-between;
   align-items: center;
 }
-.muted { color: var(--muted); font-size: 0.9rem; }
+.muted { color: var(--white); font-size: 0.9rem; }
