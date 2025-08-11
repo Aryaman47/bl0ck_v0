@@ -12,8 +12,8 @@ const lastAction = document.getElementById("lastAction");
 
 const ddmToggle = document.getElementById("ddmToggle");
 const ddmControls = document.getElementById("ddmControls");
-const ddmSubstatus = document.getElementById("ddmSubstatus");
-const globalMode = document.getElementById("globalMode");
+// const ddmSubstatus = document.getElementById("ddmSubstatus");
+// const globalMode = document.getElementById("globalMode");
 
 const timeoutDisplay = document.getElementById("timeoutDisplay");
 const timeoutInput = document.getElementById("timeoutInput");
@@ -78,8 +78,8 @@ function showDDMControls(show) {
 }
 
 function updateModeLabels() {
-  if (globalMode) globalMode.textContent = state.ddmEnabled ? "DDM" : "Standard";
-  if (ddmSubstatus) ddmSubstatus.textContent = state.ddmEnabled ? `DDM: Enabled (${state.ddmMode})` : "DDM: Disabled";
+  // if (globalMode) globalMode.textContent = state.ddmEnabled ? "DDM" : "Standard";
+  // if (ddmSubstatus) ddmSubstatus.textContent = state.ddmEnabled ? `DDM: Enabled (${state.ddmMode})` : "DDM: Disabled";
   if (ddmToggle) ddmToggle.checked = !!state.ddmEnabled;
   showDDMControls(!!state.ddmEnabled);
 

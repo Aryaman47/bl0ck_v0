@@ -1,7 +1,10 @@
-/* styles.css - compiled simple styles based on your SCSS */
+// @font-face {
+//   font-family: 'PixelFont';
+//   src: url('/fonts/PixelFont.ttf') format('truetype');
+// }
 @font-face {
-  font-family: 'PixelFont';
-  src: url('/fonts/PixelFont.ttf') format('truetype');
+  font-family: 'Cascadia';
+  src: url('/fonts/Cascadia.ttf') format('truetype');
 }
 
 :root {
@@ -22,7 +25,7 @@ body {
   display: flex;
   flex-direction: column;
   
-  font-family: PixelFont, monospace, 'Roboto', 'Helvetica Neue';
+  font-family: Cascadia, monospace, 'Roboto', 'Helvetica Neue';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -43,11 +46,17 @@ body {
 }
 
 .header {
+  margin: auto;
   display: flex;
   justify-content: center; /* center the h1 horizontally */
   align-items: center;
   text-align: center;
   gap: 12px;
+
+  width: 50%;
+  height: 15%;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.06);
 }
 
 .header h1 {
@@ -55,20 +64,21 @@ body {
 }
 
 .title {
-  font-family: PixelFont, monospace;
-  font-size: 1.2rem;
+  font-family: Cascadia, monospace;
+  font-size: 2rem;
   letter-spacing: 1px;
 }
 
 .mode-status {
-  display: flex;
+  // display: flex;
+  position: fixed;
   align-items: center;
   gap: 12px;
   margin-top: 4px; /* aligns better with .panel-title */
 }
 
 .mode-status .switch {
-  display: inline-block;
+  display: block;
   width: 42px;
   height: 24px;
   position: relative;
@@ -135,7 +145,8 @@ input:checked + .slider:before {
   align-items: center;
 }
 button{
-  font-family: PixelFont, monospace;
+  font-family: Cascadia, monospace;
+  font-size: 1.2rem;
 }
 .controls button,
 .ddm-controls button,
@@ -168,8 +179,8 @@ button{
 
 .output {
   white-space: pre-wrap;
-  font-family: PixelFont, monospace;
-  font-size: 0.95rem;
+  font-family: Cascadia, monospace;
+  font-size: 1rem;
   color: var(--white);
   flex: 1; /* fills available space in right-panel */
   overflow-y: auto; /* scroll only inside output */
@@ -184,4 +195,4 @@ button{
   justify-content: space-between;
   align-items: center;
 }
-.muted { color: var(--white); font-size: 0.9rem; }
+.muted { color: var(--white); font-size: 1rem; }
