@@ -12,6 +12,8 @@ const lastAction = document.getElementById("lastAction");
 
 const ddmToggle = document.getElementById("ddmToggle");
 const ddmControls = document.getElementById("ddmControls");
+
+
 // const ddmSubstatus = document.getElementById("ddmSubstatus");
 // const globalMode = document.getElementById("globalMode");
 
@@ -74,8 +76,15 @@ async function apiPost(path) {
 
 // UI update functions
 function showDDMControls(show) {
-  if (ddmControls) ddmControls.style.display = show ? "block" : "none";
+  if (ddmControls) {
+    if (show) {
+      ddmControls.classList.add("show");
+    } else {
+      ddmControls.classList.remove("show");
+    }
+  }
 }
+
 
 function updateModeLabels() {
   // if (globalMode) globalMode.textContent = state.ddmEnabled ? "DDM" : "Standard";

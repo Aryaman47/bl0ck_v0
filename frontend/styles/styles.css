@@ -64,17 +64,32 @@ body {
   letter-spacing: 1px;
 }
 
-.mode-status {
-  position: fixed;
-  align-items: center;
+.main {
+  display: flex;
+  gap: 16px;
+  height: calc(100vh - 150px); /* Ensures panels fit without scrolling the whole page */
+}
+
+.left-panel {
+  width: 360px;
+  display: flex;
+  flex-direction: column;
   gap: 12px;
-  margin-top: 4px; /* aligns better with .panel-title */
+  flex-shrink: 0; /* Prevent shrinking when right panel scrolls */
+}
+
+.mode-status {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  margin-top: 8px; /* space under timeout controls */
+  position: relative; /* removed fixed positioning */
 }
 
 .mode-status .switch {
-  display: block;
-  width: 42px;
-  height: 24px;
+  display: inline-block;
+  width: 60px; /* increased for labels */
+  height: 26px;
   position: relative;
 }
 
@@ -113,21 +128,33 @@ input:checked + .slider {
 }
 
 input:checked + .slider:before {
-  transform: translateX(20px);
+  transform: translateX(34px); /* adjusted for larger width */
 }
 
-.main {
-  display: flex;
-  gap: 16px;
-  height: calc(100vh - 150px); /* Ensures panels fit without scrolling the whole page */
+/* Added ON/OFF labels */
+.slider::after {
+  content: "OFF";
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 10px;
+  color: var(--white);
+  font-family: Cascadia, monospace;
 }
 
-.left-panel {
-  width: 360px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  flex-shrink: 0; /* Prevent shrinking when right panel scrolls */
+input:checked + .slider::after {
+  content: "ON";
+  left: 8px;
+  right: auto;
+}
+
+.ddm-controls {
+  position: absolute; /* now appears below switch */
+  top: calc(100% + 6px); /* spacing below the switch */
+  right: 0;
+  width: 100%;
+  margin-top: 0; /* override previous margin */
 }
 
 .right-panel {
@@ -182,6 +209,20 @@ button {
   color: var(--white);
 }
 
+/* Smooth show/hide for .ddm-controls */
+.ddm-controls {
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  opacity: 0;
+  transform: translateY(-6px);
+  pointer-events: none; /* Prevent interaction while hidden */
+}
+
+.ddm-controls.show {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
 .output {
   white-space: pre-wrap;
   font-family: Cascadia, monospace;
@@ -193,12 +234,6 @@ button {
   border-radius: 6px;
   border: 1px dashed rgba(255, 255, 255, 0.03);
   background: rgba(255, 255, 255, 0.01);
-}
-
-.footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
 }
 
 .muted {
