@@ -1,4 +1,4 @@
-#!bin/bash or #!/usr/bin/bash
+#!bin/bash or replace with #!/usr/bin/bash
 
 BASE="http://127.0.0.1:8000"
 
