@@ -1,0 +1,23 @@
+#!bin/bash or replace with #!/usr/bin/bash
+
+BASE="http://127.0.0.1:8000"
+
+if [[ $1 == "blockchain" && -z $2 ]]; then
+    curl "$BASE/blockchain/"
+elif [[ $1 == "blockchain" && $2 == "add" ]]; then
+    curl -X POST "$BASE/blockchain/add"
+elif [[ $1 == "blockchain" && $2 == "last" && $3 == "block" ]]; then
+    curl "$BASE/blockchain/last-block"
+elif [[ $1 == "difficulty" && $2 == "enable" ]]; then
+    curl -X POST "$BASE/difficulty/enable"
+elif [[ $1 == "difficulty" && $2 == "disable" ]]; then
+    curl -X POST "$BASE/difficulty/disable"
+elif [[ $1 == "difficulty" && $2 == "set" && $3 == "manual" ]]; then
+    curl -X POST "$BASE/difficulty/set-manual/$4"
+elif [[ $1 == "difficulty" && $2 == "switch" && $3 == "to" && $4 == "auto" ]]; then
+    curl -X POST "$BASE/difficulty/switch-to-auto"
+elif [[ $1 == "mining" && $2 == "set" && $3 == "timeout" ]]; then
+    curl -X POST "$BASE/mining/set-timeout/$4"
+else
+    echo "Unknown command"
+fi
