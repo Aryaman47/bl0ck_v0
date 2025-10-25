@@ -16,7 +16,7 @@ The project uses fastAPI to make API requests and uvicorn to load the frontend i
 
 
 ## Project Launch
-Once the virtual environment has been activated, execute the following commands in powershell terminal of VS Code:
+Once the virtual environment has been activated, execute the following commands in powershell terminal in VS Code:
     
     cd backend
     uvicorn main:app --reload
