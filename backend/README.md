@@ -33,13 +33,15 @@ Follow the list of API calls mentioned below
 > **_NOTE_** *Execute `. ./profile-curl.ps1` to use `cl` and `clPost` in order to avoid using `curl.exe http://127.0.0.1:8000/` and `curl.exe -X POST http://127.0.0.1:8000/`, respectively. Change the port number in profile-curl.ps1, in case the default is busy.*
 
 ---
-### Root Welcome 
+### Root Welcome
+    cl blockchain/
+---
     curl.exe http://127.0.0.1:8000/
 
 ### Get Entire Blockchain ⛓️🅱️⛓️
-    cl blockchain/ 
+    clPost blockchain/display
 ---
-    curl.exe http://127.0.0.1:8000/blockchain/
+    curl.exe -X POST http://127.0.0.1:8000/blockchain/display
 
 ### Add a New Block to the Bl0ckchain 🅱️✅
     clPost blockchain/add
@@ -47,9 +49,13 @@ Follow the list of API calls mentioned below
     curl.exe -X POST http://127.0.0.1:8000/blockchain/add
 
 ### Get the last (latest) Bl0ck added to the system 🔗🅱️
+<<<<<<< HEAD
     cl blockchain/last-block
+=======
+    clPost blockchain/last-block 
+>>>>>>> exp-CPU
 ---
-    curl.exe http://127.0.0.1:8000/blockchain/last-block
+    curl.exe -X POST http://127.0.0.1:8000/blockchain/last-block
 
 ### Enable DDM (Dynamic Difficulty Mode) ⛓️🔄️✅
     clPost difficulty/enable

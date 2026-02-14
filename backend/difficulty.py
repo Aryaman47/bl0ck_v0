@@ -71,7 +71,7 @@ class DifficultyAdjuster:
         """Tracks difficulty level when mining fails due to timeout (legacy field kept)."""
         self.failed_difficulty = difficulty
 
-    # ---------- New helpers for session-level failure/block tracking ----------
+    #  New helpers for session-level failure/block tracking 
 
     def increment_failure_count(self, difficulty):
         """Increment and return the failure count for a particular difficulty in this session."""
@@ -100,7 +100,7 @@ class DifficultyAdjuster:
         """Return True if candidate_difficulty is blocked (i.e., >= any blocked threshold)."""
         return any(block <= candidate_difficulty for block in self.blocked_thresholds)
 
-    # ---------- NEW: setter to commit difficulty changes immediately ----------
+    #  NEW: setter to commit difficulty changes immediately 
 
     def set_difficulty(self, new_difficulty):
         """Set the authoritative difficulty value (bounded) and print debug."""
