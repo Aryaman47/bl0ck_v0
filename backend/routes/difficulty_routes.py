@@ -9,7 +9,13 @@ async def enable_dynamic_difficulty():
     if blockchain.dynamic_difficulty_enabled:
         return {"message": "⚠️ DDM is already enabled!"}
     blockchain.enable_dynamic_difficulty()
-    return {"message": "✅ Dynamic Difficulty Mode enabled."}
+    return {"message": "✅ Dynamic Difficulty Mode enabled.", "current_difficulty": blockchain.difficulty_adjuster.difficulty}
+
+@router.get("/current")
+async def get_current_difficulty():
+    if not blockchain.dynamic_difficulty_enabled:
+        raise HTTPException(status_code=400, detail="⚠️ Dynamic Difficulty Mode is not enabled!")
+    return {"current_difficulty": blockchain.difficulty_adjuster.difficulty}
 
 @router.post("/disable")
 async def disable_dynamic_difficulty():

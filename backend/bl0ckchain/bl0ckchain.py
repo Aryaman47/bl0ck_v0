@@ -29,6 +29,7 @@ class Blockchain:
         self.dynamic_difficulty_enabled = False
         self.manual_mode = False
         print("\n🔄 Reverted to Standard Mode (bl0ck v0).")
+        
 
     def set_manual_difficulty(self, difficulty):
         if 1 <= difficulty <= 10:
