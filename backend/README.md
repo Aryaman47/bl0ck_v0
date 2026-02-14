@@ -49,11 +49,7 @@ Follow the list of API calls mentioned below
     curl.exe -X POST http://127.0.0.1:8000/blockchain/add
 
 ### Get the last (latest) Bl0ck added to the system 🔗🅱️
-<<<<<<< HEAD
-    cl blockchain/last-block
-=======
     clPost blockchain/last-block 
->>>>>>> exp-CPU
 ---
     curl.exe -X POST http://127.0.0.1:8000/blockchain/last-block
 
