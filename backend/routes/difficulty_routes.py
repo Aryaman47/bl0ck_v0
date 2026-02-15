@@ -1,4 +1,4 @@
-#difficulty_routes.py
+#backend/routes/difficulty_routes.py
 from fastapi import APIRouter, HTTPException
 from singleton import blockchain  # <-- Use the shared instance
 
@@ -15,7 +15,7 @@ async def enable_dynamic_difficulty():
 async def get_current_difficulty():
     if not blockchain.dynamic_difficulty_enabled:
         raise HTTPException(status_code=400, detail="⚠️ Dynamic Difficulty Mode is not enabled!")
-    return {"current_difficulty": blockchain.difficulty_adjuster.difficulty}
+    return {"current_difficulty": blockchain.difficulty_adjuster.difficulty - 1, "next_difficulty": blockchain.difficulty_adjuster.difficulty}
 
 @router.post("/disable")
 async def disable_dynamic_difficulty():
