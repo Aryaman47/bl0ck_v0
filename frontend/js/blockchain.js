@@ -7,7 +7,7 @@ export function bindBlockchainEvents({ btnBlockchain, btnNewBlock, btnLastBlock 
   if (btnBlockchain) btnBlockchain.addEventListener("click", async () => {
     setLastAction("Fetching blockchain...");
     try {
-      const data = await apiGet("/blockchain/");
+      const data = await apiGet("/blockchain/display");
       setOutput(JSON.stringify(data.blockchain || data, null, 2));
       setLastAction("Fetched blockchain");
     } catch (e) { errToOutput(e); }
@@ -37,9 +37,9 @@ export function bindBlockchainEvents({ btnBlockchain, btnNewBlock, btnLastBlock 
       setOutput(JSON.stringify(last || {}, null, 2));
       setLastAction("Last block displayed");
 
-      const s = await apiGet("/status");
-      state.timeout = s.timeout || state.timeout;
-      state.difficulty = s.difficulty || state.difficulty;
+      // const s = await apiGet("/status");
+      // state.timeout = s.timeout || state.timeout;
+      // state.difficulty = s.difficulty || state.difficulty;
       updateModeLabels(state);
     } catch (e) { errToOutput(e); }
   });

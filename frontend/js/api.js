@@ -1,5 +1,5 @@
 // api.js - Fetch helpers
-const API_BASE = "";
+const API_BASE = "http://127.0.0.1:8000";
 
 export async function apiGet(path) {
   const res = await fetch(API_BASE + path);
