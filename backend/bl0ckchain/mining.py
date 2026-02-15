@@ -1,4 +1,4 @@
-# mining.py
+# backend/bl0ckchain/mining.py
 import time
 from .bl0ck import Block
 

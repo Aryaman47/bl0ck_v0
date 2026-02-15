@@ -1,5 +1,5 @@
-# bl0ckchain_routes.py
-from fastapi import APIRouter, HTTPException
+# backend/routes/bl0ckchain_routes.py
+from fastapi import APIRouter, HTTPException, run_in_threadpool
 from singleton import blockchain  # <-- Use the shared instance
 from bl0ckchain.display import display_chain, last_block
 
@@ -18,7 +18,7 @@ async def get_blockchain():
 
 @router.post("/add")
 async def add_block():
-    new_block = blockchain.add_block()
+    new_block = await run_in_threadpool(blockchain.add_block)  # Run the blocking mining operation in a thread
     if new_block is None:
         return {
             "error": "❌ Block mining failed due to timeout!",

@@ -6,6 +6,7 @@ class DifficultyAdjuster:
         :param target_block_time: Ideal time (in seconds) to mine a block.
         :param adjustment_interval: Number of blocks after which difficulty is adjusted.
         :param max_difficulty: Maximum difficulty allowed.
+
         """
         self.target_block_time = target_block_time
         self.adjustment_interval = adjustment_interval
