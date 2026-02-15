@@ -6,7 +6,7 @@ export async function init(state) {
   setOutput("Initializing from server...");
   setLastAction("Initializing");
   try {
-    const s = await apiGet("/status");
+    const s = await apiGet("/blockchain/status");
     state.ddmEnabled = !!s.ddm_enabled;
     state.ddmMode = s.ddm_mode || "auto";
     state.timeout = s.timeout || state.timeout;

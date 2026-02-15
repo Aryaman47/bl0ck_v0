@@ -1,15 +1,16 @@
 # backend/routes/bl0ckchain_routes.py
-from fastapi import APIRouter, HTTPException, run_in_threadpool
+from fastapi import APIRouter, HTTPException
+from fastapi.concurrency import run_in_threadpool
 from singleton import blockchain  # <-- Use the shared instance
 from bl0ckchain.display import display_chain, last_block
 
 router = APIRouter()
 
-@router.get("/")
+@router.get("/status")
 async def root():
     return {"message": "Welcome to the bl0ckchain API! Use /display to see the blockchain and /add to mine a new block."}
 
-@router.post("/display")
+@router.get("/display")
 async def get_blockchain():
     chain_data = display_chain(blockchain.chain)
     if not chain_data:
@@ -30,7 +31,7 @@ async def add_block():
         "difficulty": new_block.difficulty,
     }
 
-@router.post("/last-block")
+@router.get("/last-block")
 async def get_last_block():
     block = last_block(blockchain.chain)
     if block is None:
