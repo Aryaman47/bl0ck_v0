@@ -3,8 +3,10 @@ from fastapi import FastAPI # type: ignore
 from fastapi.middleware.cors import CORSMiddleware # type: ignore
 from fastapi.staticfiles import StaticFiles # type: ignore
 
+
+
 # import routers (existing)
-from routes import bl0ckchain_routes, difficulty_routes, mining_routes
+from routes import bl0ckchain_routes, difficulty_routes, mining_routes, log_routes
 
 # use singleton blockchain instance you've already created
 from singleton import blockchain
@@ -25,6 +27,7 @@ app.add_middleware(
 app.include_router(bl0ckchain_routes.router, prefix="/blockchain")
 app.include_router(difficulty_routes.router, prefix="/difficulty")
 app.include_router(mining_routes.router, prefix="/mining")
+app.include_router(log_routes.router)
 
 # status endpoint for frontend initialization
 @app.get("/status")

@@ -1,7 +1,7 @@
 # backend/bl0ckchain/mining.py
 import time
 from .bl0ck import Block
-
+from logger import logger
 # Default timeout value (in seconds)
 timeout_limit = 60
 
@@ -51,6 +51,7 @@ def set_mining_timeout(timeout):
     if timeout > 0:
         timeout_limit = timeout
         print(f"⏳ Mining timeout set to {timeout} seconds.")
+        logger.info(f"Mining timeout updated to {timeout} seconds.")
     else:
         print("⚠️ Invalid timeout! Please enter a positive number.")
 

@@ -3,8 +3,10 @@ from .bl0ck import Block
 from .mining import mine_block, get_mining_timeout #, set_mining_timeout
 from .storage import save_to_file, load_from_file
 from difficulty import DifficultyAdjuster
+from logger import logger
 import datetime
 import threading
+
 # import time
 
 class Blockchain:
@@ -26,12 +28,14 @@ class Blockchain:
     def enable_dynamic_difficulty(self):
         self.dynamic_difficulty_enabled = True
         self.manual_mode = False
-        print("\n⚡ Dynamic Difficulty Mode Enabled! (Automatic Mode)")
+        print("\n⚡Dynamic Difficulty Mode Enabled! (Automatic Mode)")
+        logger.info("\n⚡Dynamic Difficulty Mode Enabled! (Automatic Mode)")
 
     def disable_dynamic_difficulty(self):
         self.dynamic_difficulty_enabled = False
         self.manual_mode = False
         print("\n🔄 Reverted to Standard Mode (bl0ck v0).")
+        logger.info("\n🔄 Reverted to Standard Mode (bl0ck v0).")
         
 
     def set_manual_difficulty(self, difficulty):
@@ -39,21 +43,26 @@ class Blockchain:
             self.difficulty_adjuster.set_difficulty(difficulty)
             self.manual_mode = True
             print(f"✅ Manual Difficulty Set: {difficulty} (DDM in Manual Mode)")
+            logger.info(f"✅ Manual Difficulty Set: {difficulty} (DDM in Manual Mode)")
         else:
             print("⚠️ Invalid input! Please enter a difficulty between 1 and 10.")
+            logger.warning("⚠️ Invalid input for manual difficulty: {}".format(difficulty))
+
 
     def switch_to_auto_mode(self):
         if not self.manual_mode:
             print("⚠️ Already in Automatic Mode!")
+            logger.warning("⚠️ Already in Automatic Mode!")
             return
 
         self.manual_mode = False
         print("🔄 Switching back to Automatic Difficulty Adjustment!")
-
+        logger.info("🔄 Switching back to Automatic Difficulty Adjustment!")
         if self.difficulty_adjuster.failed_difficulty:
             new_diff = max(1, self.difficulty_adjuster.failed_difficulty - 1)
             self.difficulty_adjuster.set_difficulty(new_diff)
             print(f"🔄 Adjusting difficulty to {new_diff} due to previous failure.")
+            logger.info(f"🔄 Adjusting difficulty to {new_diff} due to previous failure.")
 
     def add_block(self):
         with self.lock:  # Ensure only one mining operation at a time
@@ -71,6 +80,7 @@ class Blockchain:
                 if base_difficulty >= max_block:
                     max_allowed_diff = max(1, max_block - 1)
                     print(f"[DEBUG] Difficulty {base_difficulty} blocked, limiting to {max_allowed_diff}")
+                    logger.info(f"[DEBUG] Difficulty {base_difficulty} blocked, limiting to {max_allowed_diff}")
 
             current_timeout = get_mining_timeout()
             fail_count = self.difficulty_adjuster.get_failure_count(base_difficulty)
@@ -90,6 +100,7 @@ class Blockchain:
             # If fail count > 3 for this difficulty, try once with increased timeout before blacklisting
             if fail_count > 3:
                 print(f"[DEBUG] FailCount > 3 for difficulty {base_difficulty}, increasing timeout and retrying")
+                logger.info(f"[DEBUG] FailCount > 3 for difficulty {base_difficulty}, increasing timeout and retrying")
                 block, mined_hash, mining_time = attempt_mine(base_difficulty, current_timeout + 60)
                 if mined_hash is None:
                     # blacklist difficulty - do not allow increment to this or beyond
@@ -99,6 +110,7 @@ class Blockchain:
                     self.difficulty_adjuster.set_difficulty(new_diff)
                     self.difficulty_adjuster.reset_failure_count(base_difficulty)
                     print(f"[DEBUG] Blacklisting difficulty {base_difficulty}. Limiting max difficulty to {new_diff}.")
+                    logger.info(f"[DEBUG] Blacklisting difficulty {base_difficulty}. Limiting max difficulty to {new_diff}.")
                     return None  # fail without adding block
                 else:
                     # success with increased timeout, reset fail count and continue
@@ -108,6 +120,7 @@ class Blockchain:
                     save_to_file(self.chain)
                     # difficulty stays same, no increment for next round
                     print(f"\n✅ Block {block.index} added! Difficulty: {block.difficulty} (with increased timeout)")
+                    logger.info(f"[DEBUG] Block {block.index} added with difficulty {block.difficulty} (with increased timeout)")
                     return block
 
             # Normal mining flow: try base difficulty, if fail decrement once and retry
@@ -121,11 +134,12 @@ class Blockchain:
                 # Retry at one difficulty lower if possible
                 retry_diff = max(1, effective_difficulty - 1)
                 print(f"[DEBUG] Mining failed at difficulty {effective_difficulty}, retrying at {retry_diff} (FailCount={fail_count})")
-
+                logger.info(f"[DEBUG] Mining failed at difficulty {effective_difficulty}, retrying at {retry_diff} (FailCount={fail_count})")
                 block_retry, mined_hash_retry, mining_time_retry = attempt_mine(retry_diff, current_timeout)
                 if mined_hash_retry is None:
                     # Fail again at retry difficulty, do NOT increment fail count again for retry difficulty
                     print(f"[DEBUG] Mining also failed at retry difficulty {retry_diff}.")
+                    logger.info(f"[DEBUG] Mining also failed at retry difficulty {retry_diff}.")
                     return None  # give up, do not add block
 
                 else:
@@ -137,6 +151,7 @@ class Blockchain:
 
                     # Keep fail count for base difficulty, but difficulty stays at base difficulty for next round (no increment)
                     print(f"\n✅ Block {block_retry.index} added! Difficulty: {retry_diff} (Retry success, fail count kept at {fail_count})")
+                    logger.info(f"[DEBUG] Block {block_retry.index} added with difficulty {retry_diff} (Retry success, fail count kept at {fail_count})")
 
                     # Keep difficulty at base difficulty for next call (do not increment to base_difficulty + 1)
                     self.difficulty_adjuster.set_difficulty(base_difficulty)
@@ -152,10 +167,11 @@ class Blockchain:
                 self.difficulty_adjuster.reset_failure_count(base_difficulty)
 
                 print(f"\n✅ Block {block.index} added! Difficulty: {block.difficulty}")
-
+                logger.info(f"\n✅ Block {block.index} added! Difficulty: {block.difficulty}")
                 # 🔹 Manual mode: DO NOT change difficulty
                 if self.manual_mode:
                     print(f"[DEBUG] Manual mode active. Keeping difficulty fixed at {base_difficulty}.")
+                    logger.info(f"[DEBUG] Manual mode active. Keeping difficulty fixed at {base_difficulty}.")
                     return block
 
                 # 🔹 Auto mode: allow increment
@@ -169,5 +185,5 @@ class Blockchain:
 
                     self.difficulty_adjuster.set_difficulty(new_difficulty)
                     print(f"[DEBUG] Difficulty incremented to {new_difficulty} for next round.")
-
+                    logger.info(f"[DEBUG] Difficulty incremented to {new_difficulty} for next round.")
                 return block
