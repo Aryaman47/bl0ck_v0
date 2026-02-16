@@ -1,4 +1,4 @@
-// timeout.js - Timeout setting logic
+// frontend/js/timeout.js - Timeout setting logic
 import { apiPost } from "./api.js";
 import { setOutput, setLastAction, errToOutput } from "./ui.js";
 import { state } from "./state.js";

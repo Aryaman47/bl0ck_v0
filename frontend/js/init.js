@@ -1,4 +1,6 @@
-// init.js - Initialize from /status
+// frontend/js/init.js - Initialize from /status
+console.log("INIT CALLED");
+
 import { apiGet } from "./api.js";
 import { setOutput, setLastAction, updateModeLabels } from "./ui.js";
 
@@ -6,7 +8,7 @@ export async function init(state) {
   setOutput("Initializing from server...");
   setLastAction("Initializing");
   try {
-    const s = await apiGet("/blockchain/status");
+    const s = await apiGet("/status");
     state.ddmEnabled = !!s.ddm_enabled;
     state.ddmMode = s.ddm_mode || "auto";
     state.timeout = s.timeout || state.timeout;

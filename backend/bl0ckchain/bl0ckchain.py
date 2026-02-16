@@ -1,11 +1,11 @@
 # backend/bl0ckchain/bl0ckchain.py
 from .bl0ck import Block
-from .mining import mine_block, get_mining_timeout, set_mining_timeout
+from .mining import mine_block, get_mining_timeout #, set_mining_timeout
 from .storage import save_to_file, load_from_file
 from difficulty import DifficultyAdjuster
 import datetime
 import threading
-import time
+# import time
 
 class Blockchain:
     def __init__(self):

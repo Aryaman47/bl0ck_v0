@@ -1,4 +1,4 @@
-// api.js - Fetch helpers
+// frontend/js/api.js - Fetch helpers
 const API_BASE = "http://localhost:8000";
 
 export async function apiGet(path) {

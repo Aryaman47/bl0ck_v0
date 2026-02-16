@@ -1,4 +1,4 @@
-// ui.js - UI helpers
+// frontend/js/ui.js - UI helpers
 const output = document.getElementById("output");
 const lastAction = document.getElementById("lastAction");
 const ddmControls = document.getElementById("ddmControls");

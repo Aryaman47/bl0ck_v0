@@ -1,4 +1,4 @@
-// ddm.js - Dynamic Difficulty Mode
+// frontend/js/ddm.js - Dynamic Difficulty Mode
 import { apiPost } from "./api.js";
 import { setOutput, setLastAction, errToOutput, updateModeLabels } from "./ui.js";
 import { state } from "./state.js";

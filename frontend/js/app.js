@@ -1,4 +1,6 @@
-// app.js - Entry point: UI logic wiring + init
+// frontend/js/app.js - Entry point: UI logic wiring + init
+console.log("APP MODULE LOADED");
+
 import { state } from "./state.js";
 import { init } from "./init.js";
 import { bindBlockchainEvents } from "./blockchain.js";
