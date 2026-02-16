@@ -1,5 +1,5 @@
 // frontend/js/app.js - Entry point: UI logic wiring + init
-console.log("APP MODULE LOADED");
+
 
 import { state } from "./state.js";
 import { init } from "./init.js";

@@ -1,5 +1,4 @@
 // frontend/js/init.js - Initialize from /status
-console.log("INIT CALLED");
 
 import { apiGet } from "./api.js";
 import { setOutput, setLastAction, updateModeLabels } from "./ui.js";

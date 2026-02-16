@@ -25,3 +25,12 @@ export function updateModeLabels(state) {
   if (timeoutDisplay) timeoutDisplay.textContent = state.timeout;
   if (timeoutInput) timeoutInput.value = state.timeout;
 }
+
+const btnClear = document.getElementById("btnClear");
+
+if (btnClear) {
+  btnClear.addEventListener("click", () => {
+    if (output) output.textContent = "Welcome to The bl0ck 🔗 API UI. Use controls on left ";
+    if (lastAction) lastAction.textContent = "Cleared";
+  });
+}

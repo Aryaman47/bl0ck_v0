@@ -151,15 +151,23 @@ class Blockchain:
                 # Reset fail count on success for this difficulty
                 self.difficulty_adjuster.reset_failure_count(base_difficulty)
 
-                # Increment difficulty for next round, but respect blacklist limits
-                new_difficulty = base_difficulty + 1
-                if self.difficulty_adjuster.blocked_thresholds:
-                    min_block = min(self.difficulty_adjuster.blocked_thresholds)
-                    if new_difficulty >= min_block:
-                        new_difficulty = max(1, min_block - 1)
-
-                self.difficulty_adjuster.set_difficulty(new_difficulty)
-
                 print(f"\n✅ Block {block.index} added! Difficulty: {block.difficulty}")
-                print(f"[DEBUG] Difficulty incremented to {new_difficulty} for next round.")
+
+                # 🔹 Manual mode: DO NOT change difficulty
+                if self.manual_mode:
+                    print(f"[DEBUG] Manual mode active. Keeping difficulty fixed at {base_difficulty}.")
+                    return block
+
+                # 🔹 Auto mode: allow increment
+                if self.dynamic_difficulty_enabled:
+                    new_difficulty = base_difficulty + 1
+
+                    if self.difficulty_adjuster.blocked_thresholds:
+                        min_block = min(self.difficulty_adjuster.blocked_thresholds)
+                        if new_difficulty >= min_block:
+                            new_difficulty = max(1, min_block - 1)
+
+                    self.difficulty_adjuster.set_difficulty(new_difficulty)
+                    print(f"[DEBUG] Difficulty incremented to {new_difficulty} for next round.")
+
                 return block
