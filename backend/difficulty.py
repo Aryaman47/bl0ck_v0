@@ -120,5 +120,5 @@ class DifficultyAdjuster:
 
         self.difficulty = new_difficulty
         print(f"[DEBUG] Difficulty forcibly set to {self.difficulty}")
-        logger.info(f"[DEBUG] Difficulty forcibly set to {self.difficulty}")
+        logger.debug(f"[DEBUG] Difficulty forcibly set to {self.difficulty}")
         return self.difficulty

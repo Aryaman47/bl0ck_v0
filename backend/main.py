@@ -2,7 +2,9 @@
 from fastapi import FastAPI # type: ignore
 from fastapi.middleware.cors import CORSMiddleware # type: ignore
 from fastapi.staticfiles import StaticFiles # type: ignore
-
+from fastapi import WebSocket
+from mining_state import mining_state
+import asyncio
 
 
 # import routers (existing)
@@ -53,6 +55,16 @@ async def status():
         "difficulty": difficulty,
         "failed_difficulty": failed,
     }
+
+@app.websocket("/ws/mining")
+async def mining_ws(websocket: WebSocket):
+    await websocket.accept()
+    try:
+        while True:
+            await asyncio.sleep(1)
+            await websocket.send_json(mining_state.snapshot())
+    except Exception as e:
+        print(f"WebSocket error: {e}")
 
 # serve frontend static files (index.html at root)
 app.mount("/", StaticFiles(directory="../frontend", html=True), name="frontend")

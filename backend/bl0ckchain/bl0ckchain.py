@@ -174,16 +174,23 @@ class Blockchain:
                     logger.info(f"[DEBUG] Manual mode active. Keeping difficulty fixed at {base_difficulty}.")
                     return block
 
-                # 🔹 Auto mode: allow increment
+                # 🔹 Auto mode: adjust difficulty based on mining time
                 if self.dynamic_difficulty_enabled:
-                    new_difficulty = base_difficulty + 1
+                    # Record mining time for difficulty adjustment
+                    self.difficulty_adjuster.record_block_time(block.mining_time)
 
+                    # Let DifficultyAdjuster compute next difficulty
+                    new_difficulty = self.difficulty_adjuster.adjust_difficulty()
+
+                    # Respect blacklist limits
                     if self.difficulty_adjuster.blocked_thresholds:
                         min_block = min(self.difficulty_adjuster.blocked_thresholds)
                         if new_difficulty >= min_block:
                             new_difficulty = max(1, min_block - 1)
 
                     self.difficulty_adjuster.set_difficulty(new_difficulty)
-                    print(f"[DEBUG] Difficulty incremented to {new_difficulty} for next round.")
-                    logger.info(f"[DEBUG] Difficulty incremented to {new_difficulty} for next round.")
+
+                    print(f"[DEBUG] Difficulty adjusted to {new_difficulty} based on mining time.")
+                    logger.info(f"[DEBUG] Difficulty adjusted to {new_difficulty} based on mining time.")
+
                 return block
