@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 #backend/routes/difficulty_routes.py
+=======
+# backend/routes/difficulty_routes.py
+>>>>>>> exp-GPU
 from fastapi import APIRouter, HTTPException
 from singleton import blockchain  # <-- Use the shared instance
 
