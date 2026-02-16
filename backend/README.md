@@ -39,9 +39,9 @@ Follow the list of API calls mentioned below
     curl.exe http://127.0.0.1:8000/
 
 ### Get Entire Blockchain ⛓️🅱️⛓️
-    clPost blockchain/display
+    cl blockchain/display
 ---
-    curl.exe -X POST http://127.0.0.1:8000/blockchain/display
+    curl.exe http://127.0.0.1:8000/blockchain/display
 
 ### Add a New Block to the Bl0ckchain 🅱️✅
     clPost blockchain/add
@@ -49,9 +49,9 @@ Follow the list of API calls mentioned below
     curl.exe -X POST http://127.0.0.1:8000/blockchain/add
 
 ### Get the last (latest) Bl0ck added to the system 🔗🅱️
-    clPost blockchain/last-block 
+    cl blockchain/last-block 
 ---
-    curl.exe -X POST http://127.0.0.1:8000/blockchain/last-block
+    curl.exe http://127.0.0.1:8000/blockchain/last-block
 
 ### Enable DDM (Dynamic Difficulty Mode) ⛓️🔄️✅
     clPost difficulty/enable
