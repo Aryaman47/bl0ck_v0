@@ -29,5 +29,5 @@ export function initLogs() {
       logOutput.textContent = (data.logs || []).join("\n");
       logOutput.scrollTop = logOutput.scrollHeight;
     } catch {}
-  }, 2000);
+  }, 10000);
 }

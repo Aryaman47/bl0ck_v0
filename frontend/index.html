@@ -31,27 +31,29 @@
           <input type="number" id="timeoutInput" min="10" max="300" />
           <button id="btnSetTimeout">Change Timeout</button>
         </div>
-        <div class="DDM-Mode"></div>
         <div class="mode-status">
-          <div id="modeLabel">DDM:</div>
+          <div class="mode-header">
+            <span id="modeLabel">Mode:</span>
+            <span id="modeBadge" class="mode-badge auto">AUTO</span>
+            <span id="difficultyBadge" class="difficulty-badge">D: 1</span>
+          </div>
+
           <label class="switch">
-            <input type="checkbox" id="ddmToggle" />
+            <input type="checkbox" id="modeToggle" />
             <span class="slider round"></span>
           </label>
-          <div class="ddm-controls" id="ddmControls">
-            <div class="ddm-title">Dynamic Difficulty Mode</div>
-            <div class="ddm-subcontrols">
-              <div>
-                <button id="btnAuto">Auto</button>
-                <input type="number" id="manualDifficulty" min="1" max="10"
-                  placeholder="Enter Manual Difficulty 1-10" />
-                <button id="btnSetManual">Set Manual Difficulty</button>
-              </div>
-            </div>
+
+          <div class="manual-controls" id="manualControls">
+            <input
+              type="number"
+              id="manualDifficulty"
+              min="1"
+              max="10"
+              placeholder="Manual Difficulty (1-10)"
+            />
+            <button id="btnSetManual">Apply</button>
           </div>
         </div>
-
-
       </section>
 
       <section class="right-panel card">
