@@ -72,52 +72,55 @@ export function bindBlockchainEvents({ btnBlockchain, btnNewBlock, btnLastBlock 
   if (btnNewBlock) {
     btnNewBlock.addEventListener("click", async () => {
 
-      // Prevent overlapping mining clicks
       if (miningInProgress) return;
 
       miningInProgress = true;
-      const currentRequest = ++requestVersion;
-
-      // Disable all blockchain buttons during mining
       btnNewBlock.disabled = true;
-      if (btnBlockchain) btnBlockchain.disabled = true;
-      if (btnLastBlock) btnLastBlock.disabled = true;
 
-      setLastAction("Mining new block...");
-      setOutput("Mining in progress... Please wait.");
+      let elapsed = 0;
+      let miningInterval = null;
+
+      setLastAction("Mining started...");
+      setOutput("Mining in progress...\nElapsed: 0s");
+
+      // Start live elapsed timer
+      miningInterval = setInterval(() => {
+        elapsed++;
+        setOutput(`Mining in progress...\nElapsed: ${elapsed}s`);
+      }, 1000);
 
       try {
         const res = await apiPost("/blockchain/add");
 
-        if (currentRequest !== requestVersion) return;
+        clearInterval(miningInterval);
 
         if (res.error) {
           setOutput("Mining failed:\n" + JSON.stringify(res, null, 2));
           setLastAction("Mining failed");
+          miningInProgress = false;
+          btnNewBlock.disabled = false;
           return;
         }
 
-        // Directly fetch last block once mining succeeds
-        setLastAction("Fetching mined block...");
+        setLastAction("Block mined successfully");
+
         const last = await apiGet("/blockchain/last-block");
 
-        if (currentRequest !== requestVersion) return;
-
-        setOutput(JSON.stringify(last || {}, null, 2));
-        setLastAction("Block mined and displayed");
+        setOutput(
+          `Block mined successfully!\n` +
+          `Elapsed (frontend): ${elapsed}s\n` +
+          `Actual mining time: ${last.mining_time}s\n\n` +
+          JSON.stringify(last, null, 2)
+        );
 
       } catch (e) {
-        if (currentRequest !== requestVersion) return;
+        clearInterval(miningInterval);
         errToOutput(e);
       } finally {
         miningInProgress = false;
-
-        // Re-enable buttons
         btnNewBlock.disabled = false;
-        if (btnBlockchain) btnBlockchain.disabled = false;
-        if (btnLastBlock) btnLastBlock.disabled = false;
       }
     });
   }
->>>>>>> exp-GPU
+
 }

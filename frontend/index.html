@@ -1,12 +1,14 @@
 <!-- frontend/index.html -->
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <title>bl0ck</title>
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <link rel="stylesheet" href="styles/styles.css" />
 </head>
+
 <body>
   <div class="container">
     <header class="header">
@@ -29,42 +31,79 @@
           <input type="number" id="timeoutInput" min="10" max="300" />
           <button id="btnSetTimeout">Change Timeout</button>
         </div>
-        <div class="DDM-Mode"></div>
         <div class="mode-status">
-          <div id="modeLabel">DDM:</div>
+          <div class="mode-header">
+            <span id="modeLabel">Mode:</span>
+            <span id="modeBadge" class="mode-badge auto">AUTO</span>
+            <span id="difficultyBadge" class="difficulty-badge">D: 1</span>
+          </div>
+
           <label class="switch">
-            <input type="checkbox" id="ddmToggle" />
+            <input type="checkbox" id="modeToggle" />
             <span class="slider round"></span>
           </label>
-          <div class="ddm-controls" id="ddmControls">
-          <div class="ddm-title">Dynamic Difficulty Mode</div>
-          <div class="ddm-subcontrols">
-            <div>
-              <button id="btnAuto">Auto</button>
-              <input type="number" id="manualDifficulty" min="1" max="10" placeholder="Enter Manual Difficulty 1-10" />
-              <button id="btnSetManual">Set Manual Difficulty</button>
-            </div>
+
+          <div class="manual-controls" id="manualControls">
+            <input
+              type="number"
+              id="manualDifficulty"
+              min="1"
+              max="10"
+              placeholder="Manual Difficulty (1-10)"
+            />
+            <button id="btnSetManual">Apply</button>
           </div>
         </div>
-        </div>
-
-        
       </section>
 
       <section class="right-panel card">
         <div class="panel-title">
-          Output <span id="lastAction" class="muted">Idle</span>
+          <div>
+            Output <span id="lastAction" class="muted">Idle</span>
+          </div>
+          <button id="toggleLogsBtn" class="logs-toggle">Show Logs</button>
         </div>
-        <div id="output" class="output">
-          Welcome to The bl0ck 🔗 API UI. Use controls on left.
+
+        <div class="output-wrapper">
+
+          <!-- 🔹 Mining Dashboard (LIVE TELEMETRY) -->
+          <div id="miningDashboard" class="mining-dashboard hidden">
+            <div class="spinner"></div>
+
+            <div class="mining-stats">
+              <div>Elapsed: <span id="liveElapsed">0</span>s</div>
+              <div>Nonce: <span id="liveNonce">0</span></div>
+              <div>Hash Rate: <span id="liveHashRate">0</span> H/s</div>
+            </div>
+
+            <div class="progress-bar">
+              <div id="progressFill"></div>
+            </div>
+          </div>
+
+          <!-- 🔹 Main Output -->
+          <div id="output" class="output-main">
+            Welcome to The bl0ck 🔗 API UI. Use controls on left.
+          </div>
+
+          <!-- 🔹 Logs -->
+          <div id="logPanel" class="log-panel">
+            <div class="log-header">
+              Backend Logs
+            </div>
+            <pre id="logOutput" class="log-output"></pre>
+          </div>
+
         </div>
-        <!-- Clear button positioned at bottom right -->
+
         <button id="btnClear" class="clear-btn">Clear</button>
       </section>
+
     </main>
 
     <script src="js/text.js"></script>
     <script type="module" src="js/app.js"></script>
   </div>
 </body>
+
 </html>

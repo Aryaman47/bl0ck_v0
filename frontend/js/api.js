@@ -3,8 +3,7 @@
 const API_BASE = "http://127.0.0.1:8000";
 =======
 // frontend/js/api.js - Fetch helpers
-const API_BASE = "http://localhost:8000";
->>>>>>> exp-GPU
+const API_BASE = `${window.location.origin}`;
 
 export async function apiGet(path) {
   const res = await fetch(API_BASE + path);

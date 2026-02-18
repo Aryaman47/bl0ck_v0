@@ -2,9 +2,13 @@
 from fastapi import FastAPI # type: ignore
 from fastapi.middleware.cors import CORSMiddleware # type: ignore
 from fastapi.staticfiles import StaticFiles # type: ignore
+from fastapi import WebSocket
+from mining_state import mining_state
+import asyncio
+
 
 # import routers (existing)
-from routes import bl0ckchain_routes, difficulty_routes, mining_routes
+from routes import bl0ckchain_routes, difficulty_routes, mining_routes, log_routes
 
 # use singleton blockchain instance you've already created
 from singleton import blockchain
@@ -25,6 +29,7 @@ app.add_middleware(
 app.include_router(bl0ckchain_routes.router, prefix="/blockchain")
 app.include_router(difficulty_routes.router, prefix="/difficulty")
 app.include_router(mining_routes.router, prefix="/mining")
+app.include_router(log_routes.router)
 
 # status endpoint for frontend initialization
 @app.get("/status")
@@ -50,6 +55,16 @@ async def status():
         "difficulty": difficulty,
         "failed_difficulty": failed,
     }
+
+@app.websocket("/ws/mining")
+async def mining_ws(websocket: WebSocket):
+    await websocket.accept()
+    try:
+        while True:
+            await asyncio.sleep(1)
+            await websocket.send_json(mining_state.snapshot())
+    except Exception as e:
+        print(f"WebSocket error: {e}")
 
 # serve frontend static files (index.html at root)
 app.mount("/", StaticFiles(directory="../frontend", html=True), name="frontend")
