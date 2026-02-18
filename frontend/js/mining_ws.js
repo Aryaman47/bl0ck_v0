@@ -1,3 +1,6 @@
+import { state } from "./state.js";
+import { updateDifficultyUI } from "./mode.js";
+
 let ws;
 
 export function initMiningSocket() {
@@ -5,7 +8,6 @@ export function initMiningSocket() {
   const wsUrl = `${protocol}://${window.location.host}/ws/mining`;
 
   ws = new WebSocket(wsUrl);
-
 
   ws.onmessage = (event) => {
     const data = JSON.parse(event.data);
@@ -26,6 +28,11 @@ function updateMiningUI(data) {
   const progressFill = document.getElementById("progressFill");
 
   if (!dashboard) return;
+  
+  if (data.difficulty && state.difficulty !== data.difficulty) {
+      state.difficulty = data.difficulty;
+      updateDifficultyUI(state.difficulty);
+  }
 
   // If mining stopped → hide dashboard
   if (!data.active) {
@@ -33,7 +40,7 @@ function updateMiningUI(data) {
     progressFill.style.width = "0%";
     return;
   }
-
+  
   // Show dashboard
   dashboard.classList.remove("hidden");
 

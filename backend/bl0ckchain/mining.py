@@ -1,8 +1,10 @@
-# backend/bl0ckchain/mining.py
+#backend/bl0ckchain/mining.py
 import time
-from .bl0ck import Block
+
 from logger import logger
 from mining_state import mining_state
+
+from .bl0ck import Block
 
 # Default timeout value (in seconds)
 timeout_limit = 60
@@ -24,7 +26,7 @@ def mine_block(block: Block, timeout=None):
     if timeout is None:
         timeout = timeout_limit
 
-    target_prefix = '0' * block.difficulty
+    target_prefix = "0" * block.difficulty
     start_time = time.time()
 
     # 🔹 Reset nonce before mining attempt
@@ -73,6 +75,7 @@ def set_mining_timeout(timeout):
         logger.info(f"Mining timeout updated to {timeout} seconds.")
     else:
         print("⚠️ Invalid timeout! Please enter a positive number.")
+
 
 def get_mining_timeout():
     """Return the current mining timeout (global session value)."""

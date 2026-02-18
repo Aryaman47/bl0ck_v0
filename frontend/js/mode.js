@@ -1,32 +1,33 @@
-import { apiPost, apiGet } from "./api.js";
+import { apiPost } from "./api.js";
 import { setOutput, setLastAction } from "./ui.js";
 import { state } from "./state.js";
 
-export function bindModeEvents({ modeToggle, btnSetManual, manualDifficulty }) {
+const modeBadge = document.getElementById("modeBadge");
+const difficultyBadge = document.getElementById("difficultyBadge");
+const manualControls = document.getElementById("manualControls");
 
-  const modeBadge = document.getElementById("modeBadge");
-  const difficultyBadge = document.getElementById("difficultyBadge");
-  const manualControls = document.getElementById("manualControls");
+export function updateModeUI() {
+  if (state.mode === "manual") {
+    modeBadge.textContent = "MANUAL";
+    modeBadge.classList.remove("auto");
+    modeBadge.classList.add("manual");
+    manualControls.classList.add("show");
+  } else {
+    modeBadge.textContent = "AUTO";
+    modeBadge.classList.remove("manual");
+    modeBadge.classList.add("auto");
+    manualControls.classList.remove("show");
+  }
+}
 
-  function updateModeUI() {
-    if (state.mode === "manual") {
-      modeBadge.textContent = "MANUAL";
-      modeBadge.classList.remove("auto");
-      modeBadge.classList.add("manual");
-      manualControls.classList.add("show");
-      modeToggle.checked = true;
-    } else {
-      modeBadge.textContent = "AUTO";
-      modeBadge.classList.remove("manual");
-      modeBadge.classList.add("auto");
-      manualControls.classList.remove("show");
-      modeToggle.checked = false;
-    }
-
+export function updateDifficultyUI() {
+  if (difficultyBadge) {
     difficultyBadge.textContent = `D: ${state.difficulty}`;
   }
+}
 
-  // Toggle Mode
+export function bindModeEvents({ modeToggle, btnSetManual, manualDifficulty }) {
+
   if (modeToggle) {
     modeToggle.addEventListener("change", async (e) => {
       const isManual = e.target.checked;
@@ -44,7 +45,6 @@ export function bindModeEvents({ modeToggle, btnSetManual, manualDifficulty }) {
     });
   }
 
-  // Apply Manual Difficulty
   if (btnSetManual) {
     btnSetManual.addEventListener("click", async () => {
       const d = Number(manualDifficulty.value);
@@ -56,19 +56,15 @@ export function bindModeEvents({ modeToggle, btnSetManual, manualDifficulty }) {
       await apiPost(`/difficulty/set-manual/${d}`);
       state.mode = "manual";
       state.difficulty = d;
+
       updateModeUI();
+      updateDifficultyUI();
+
       setOutput(`Manual Mode enabled. Difficulty: ${d}`);
       setLastAction("Manual Mode");
     });
   }
 
-  // Initialize from backend
-  async function initMode() {
-    const res = await apiGet("/difficulty/current");
-    state.mode = res.mode;
-    state.difficulty = res.current_difficulty;
-    updateModeUI();
-  }
-
-  initMode();
+  updateModeUI();
+  updateDifficultyUI();
 }
