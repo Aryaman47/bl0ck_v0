@@ -1,4 +1,5 @@
 # difficulty.py
+from logger import logger
 class DifficultyAdjuster:
     def __init__(self, target_block_time=10, adjustment_interval=5, max_difficulty=10):
         """
@@ -6,6 +7,7 @@ class DifficultyAdjuster:
         :param target_block_time: Ideal time (in seconds) to mine a block.
         :param adjustment_interval: Number of blocks after which difficulty is adjusted.
         :param max_difficulty: Maximum difficulty allowed.
+
         """
         self.target_block_time = target_block_time
         self.adjustment_interval = adjustment_interval
@@ -27,6 +29,7 @@ class DifficultyAdjuster:
             self.block_times.pop(0)
 
         print(f"[DEBUG] Block Times: {self.block_times}")
+        logger.info(f"[DEBUG] Recorded block mining time: {mining_time}s | Current block times: {self.block_times}")
 
     def adjust_difficulty(self):
         """
@@ -34,23 +37,26 @@ class DifficultyAdjuster:
         Respects session-level blocked difficulties so Dynamic Difficulty Mode (DDM = Dynamic Difficulty Mode)
         will not auto-increase to a blocked difficulty or beyond.
 
-        NEW: Also prevents auto-increment if there is a non-zero failure count for the current difficulty.
+        Also prevents auto-increment if there is a non-zero failure count for the current difficulty.
         This avoids skipping up (e.g., 7 -> 8) when difficulty 7 has recent failures.
         """
         if len(self.block_times) < self.adjustment_interval:
             print(f"[DEBUG] Not enough blocks to adjust difficulty: {len(self.block_times)}/{self.adjustment_interval}")
+            logger.info(f"[DEBUG] Not enough blocks to adjust difficulty: {len(self.block_times)}/{self.adjustment_interval}")
             return self.difficulty  # Not enough data to adjust yet
 
         avg_time = sum(self.block_times) / len(self.block_times)
         print(f"[DEBUG] Avg Mining Time: {avg_time}s | Current Difficulty: {self.difficulty}")
+        logger.info(f"[DEBUG] Avg Mining Time: {avg_time}s | Current Difficulty: {self.difficulty}")
 
         if avg_time < self.target_block_time:
             # Candidate increase
             candidate = min(self.max_difficulty, self.difficulty + 1)
 
-            # --- NEW CHECK: if the current difficulty has recorded recent failures, do NOT auto-increase ---
+            # NEW CHECK: if the current difficulty has recorded recent failures, do NOT auto-increae
             if self.get_failure_count(self.difficulty) > 0:
                 print(f"[DEBUG] Not auto-increasing because FailCount for difficulty {self.difficulty} is {self.get_failure_count(self.difficulty)}")
+                logger.info(f"[DEBUG] Not auto-increasing because FailCount for difficulty {self.difficulty} is {self.get_failure_count(self.difficulty)}")
                 candidate = self.difficulty  # keep same for now
 
             # Respect blocked thresholds: do not allow auto-increment into a blocked difficulty or beyond.
@@ -65,6 +71,7 @@ class DifficultyAdjuster:
             self.difficulty = max(1, self.difficulty - 1)  # Decrease but keep at least 1
 
         print(f"[DEBUG] New Difficulty: {self.difficulty}")
+        logger.info(f"[DEBUG] New Difficulty: {self.difficulty}")
         return self.difficulty
 
     def track_failed_difficulty(self, difficulty):
@@ -72,11 +79,12 @@ class DifficultyAdjuster:
         self.failed_difficulty = difficulty
 
     #  New helpers for session-level failure/block tracking 
-
     def increment_failure_count(self, difficulty):
         """Increment and return the failure count for a particular difficulty in this session."""
         self.failure_counts[difficulty] = self.failure_counts.get(difficulty, 0) + 1
         print(f"[DEBUG] FailCount for difficulty {difficulty}: {self.failure_counts[difficulty]}")
+        logger.info(f"[DEBUG] FailCount for difficulty {difficulty}: {self.failure_counts[difficulty]}")
+
         return self.failure_counts[difficulty]
 
     def reset_failure_count(self, difficulty):
@@ -84,6 +92,7 @@ class DifficultyAdjuster:
         if difficulty in self.failure_counts:
             del self.failure_counts[difficulty]
             print(f"[DEBUG] FailCount reset for difficulty {difficulty}")
+            logger.info(f"[DEBUG] FailCount reset for difficulty {difficulty}")
 
     def get_failure_count(self, difficulty):
         return self.failure_counts.get(difficulty, 0)
@@ -95,13 +104,13 @@ class DifficultyAdjuster:
         """
         self.blocked_thresholds.add(difficulty)
         print(f"[DEBUG] Session blocked difficulties (from): {sorted(self.blocked_thresholds)}")
+        logger.info(f"[DEBUG] Session blocked difficulties (from): {sorted(self.blocked_thresholds)}")
 
     def is_blocked_for_increase(self, candidate_difficulty):
         """Return True if candidate_difficulty is blocked (i.e., >= any blocked threshold)."""
         return any(block <= candidate_difficulty for block in self.blocked_thresholds)
 
     #  NEW: setter to commit difficulty changes immediately 
-
     def set_difficulty(self, new_difficulty):
         """Set the authoritative difficulty value (bounded) and print debug."""
         if new_difficulty < 1:
@@ -111,4 +120,5 @@ class DifficultyAdjuster:
 
         self.difficulty = new_difficulty
         print(f"[DEBUG] Difficulty forcibly set to {self.difficulty}")
+        logger.debug(f"[DEBUG] Difficulty forcibly set to {self.difficulty}")
         return self.difficulty

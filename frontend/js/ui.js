@@ -1,4 +1,4 @@
-// ui.js - UI helpers
+// frontend/js/ui.js - UI helpers
 const output = document.getElementById("output");
 const lastAction = document.getElementById("lastAction");
 const ddmControls = document.getElementById("ddmControls");
@@ -24,4 +24,13 @@ export function updateModeLabels(state) {
   showDDMControls(state.ddmEnabled);
   if (timeoutDisplay) timeoutDisplay.textContent = state.timeout;
   if (timeoutInput) timeoutInput.value = state.timeout;
+}
+
+const btnClear = document.getElementById("btnClear");
+
+if (btnClear) {
+  btnClear.addEventListener("click", () => {
+    if (output) output.textContent = "Welcome to The bl0ck 🔗 API UI. Use controls on left ";
+    if (lastAction) lastAction.textContent = "Cleared";
+  });
 }

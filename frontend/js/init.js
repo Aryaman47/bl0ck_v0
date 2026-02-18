@@ -1,4 +1,5 @@
-// init.js - Initialize from /status
+// frontend/js/init.js - Initialize from /status
+
 import { apiGet } from "./api.js";
 import { setOutput, setLastAction, updateModeLabels } from "./ui.js";
 

@@ -1,9 +1,0 @@
-bchain/
-venv/
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-*.log
-*.db
-*.DS_Store
