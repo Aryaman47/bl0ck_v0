@@ -22,7 +22,7 @@ async def get_current_difficulty():
 
 # Enable Manual Mode
 
-@router.post("/set-manual/{difficulty}", response_model=DifficultyStateResponse, responses={400: {"model": ErrorResponse}, 422: {"model": ErrorResponse}})
+@router.put("/manual/{difficulty}", response_model=DifficultyStateResponse, responses={400: {"model": ErrorResponse}, 422: {"model": ErrorResponse}})
 async def set_manual_difficulty(difficulty: int):
     if difficulty < 1 or difficulty > 10:
         raise HTTPException(
@@ -52,7 +52,7 @@ async def set_manual_difficulty(difficulty: int):
 
 # Switch Back to Automatic Mode
 
-@router.post("/switch-to-auto", response_model=DifficultyStateResponse, responses={400: {"model": ErrorResponse}, 422: {"model": ErrorResponse}})
+@router.put("/auto", response_model=DifficultyStateResponse, responses={400: {"model": ErrorResponse}, 422: {"model": ErrorResponse}})
 async def switch_to_auto_mode():
     if not blockchain.manual_mode:
         return success_response(

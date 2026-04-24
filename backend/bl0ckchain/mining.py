@@ -1,13 +1,14 @@
 #backend/bl0ckchain/mining.py
-import time
-
 from logger import logger
 from mining_state import mining_state
 
 from .bl0ck import Block
+from .mining_backends import get_backend, list_backends
 
 # Default timeout value (in seconds)
 timeout_limit = 60
+active_backend = "cpu"
+supported_backend_modes = ("cpu", "gpu", "auto")
 
 
 def mine_block(block: Block, timeout=None):
@@ -26,44 +27,11 @@ def mine_block(block: Block, timeout=None):
     if timeout is None:
         timeout = timeout_limit
 
-    target_prefix = "0" * block.difficulty
-    start_time = time.time()
+    backend = get_backend(active_backend)
+    if backend is None:
+        raise RuntimeError(f"Unsupported mining backend: {active_backend}")
 
-    # 🔹 Reset nonce before mining attempt
-    block.nonce = 0
-
-    # 🔹 Start mining state tracking
-    mining_state.start(block.difficulty)
-
-    try:
-        while True:
-            block.hash = block.calculate_hash()
-
-            if block.hash.startswith(target_prefix):
-                block.mining_time = time.time() - start_time
-
-                # 🔹 Stop mining state
-                mining_state.stop()
-
-                return block.hash, block.mining_time
-
-            block.nonce += 1
-
-            # 🔹 Update mining state live (nonce + hash rate)
-            mining_state.update(block.nonce)
-
-            # Timeout check
-            if time.time() - start_time > timeout:
-                block.mining_time = time.time() - start_time
-
-                # 🔹 Stop mining state
-                mining_state.stop()
-
-                return None, block.mining_time
-
-    finally:
-        # Safety: ensure mining state stops even if exception occurs
-        mining_state.stop()
+    return backend.mine(block, timeout, mining_state)
 
 
 def set_mining_timeout(timeout):
@@ -80,3 +48,25 @@ def set_mining_timeout(timeout):
 def get_mining_timeout():
     """Return the current mining timeout (global session value)."""
     return timeout_limit
+
+
+def get_mining_backend():
+    return active_backend
+
+
+def set_mining_backend(name: str):
+    global active_backend
+    if get_backend(name) is None:
+        raise ValueError(f"Unsupported backend '{name}'")
+    active_backend = name
+
+
+def get_mining_backend_capabilities():
+    available = list_backends()
+    return {
+        "active_backend": active_backend,
+        "available_backends": available,
+        "supported_modes": list(supported_backend_modes),
+        "gpu_available": "gpu" in available,
+        "auto_available": "auto" in available,
+    }

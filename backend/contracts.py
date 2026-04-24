@@ -42,6 +42,14 @@ class TimeoutData(BaseModel):
     timeout: int
 
 
+class MiningBackendData(BaseModel):
+    active_backend: str
+    available_backends: list[str]
+    supported_modes: list[str]
+    gpu_available: bool
+    auto_available: bool
+
+
 class LogsData(BaseModel):
     logs: list[str]
 
@@ -52,6 +60,7 @@ class StatusData(BaseModel):
     timeout: int
     difficulty: int
     failed_difficulty: int | None = None
+    mining_backend: MiningBackendData
 
 
 class BlockchainStatusResponse(BaseModel):
@@ -88,6 +97,12 @@ class MiningTimeoutResponse(BaseModel):
     success: Literal[True] = True
     message: str
     data: TimeoutData
+
+
+class MiningBackendResponse(BaseModel):
+    success: Literal[True] = True
+    message: str
+    data: MiningBackendData
 
 
 class LogsResponse(BaseModel):

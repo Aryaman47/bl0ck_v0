@@ -13,14 +13,16 @@ class MiningState:
             self.current_nonce = 0
             self.difficulty = 0
             self.hash_rate = 0
+            self.backend = "cpu"
 
-    def start(self, difficulty):
+    def start(self, difficulty, backend="cpu"):
         with self.lock:
             self.active = True
             self.start_time = time.time()
             self.current_nonce = 0
             self.difficulty = difficulty
             self.hash_rate = 0
+            self.backend = backend
 
     def update(self, nonce):
         with self.lock:
@@ -44,7 +46,8 @@ class MiningState:
                 "elapsed": round(elapsed, 2),
                 "nonce": self.current_nonce,
                 "difficulty": self.difficulty,
-                "hash_rate": round(self.hash_rate, 2)
+                "hash_rate": round(self.hash_rate, 2),
+                "backend": self.backend,
             }
 
 mining_state = MiningState()

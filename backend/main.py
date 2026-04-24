@@ -15,7 +15,7 @@ from contracts import ErrorResponse, StatusResponse, success_response
 
 # use singleton blockchain instance you've already created
 from singleton import blockchain
-from bl0ckchain.mining import get_mining_timeout
+from bl0ckchain.mining import get_mining_backend_capabilities, get_mining_timeout
 
 app = FastAPI(title="The bl0ck 🔗 API")
 api_v1_router = APIRouter(prefix="/api/v1")
@@ -105,6 +105,7 @@ async def status():
             "timeout": timeout,
             "difficulty": difficulty,
             "failed_difficulty": failed,
+            "mining_backend": get_mining_backend_capabilities(),
         },
     )
 

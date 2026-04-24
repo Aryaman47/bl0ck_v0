@@ -30,50 +30,45 @@ Follow the list of API calls mentioned below
 ## API calls via Powershell Terminal using curl.exe
 ---
 
-> **_NOTE_** *Execute `. ./profile-curl.ps1` to use `cl` and `clPost` in order to avoid using `curl.exe http://127.0.0.1:8000/` and `curl.exe -X POST http://127.0.0.1:8000/`, respectively. Change the port number in profile-curl.ps1, in case the default is busy.*
+> **_NOTE_** *Execute `. ./profile-curl.ps1` to use `cl` (GET), `clPost` (POST), and `clPut` (PUT) in order to avoid typing the full API URL each time. The helper auto-prefixes endpoints with `/api/v1`. Change the port number in profile-curl.ps1 if the default is busy.*
 
 ---
 ### Root Welcome
-    cl /
+    cl /status
 ---
-    curl.exe http://127.0.0.1:8000/
+    curl.exe http://127.0.0.1:8000/api/v1/status
 
 ### Get Entire Blockchain ⛓️🅱️⛓️
-    clPost blockchain/display
+    cl /blockchain/display
 ---
-    curl.exe -X POST http://127.0.0.1:8000/blockchain/display
+    curl.exe http://127.0.0.1:8000/api/v1/blockchain/display
 
 ### Add a New Block to the Bl0ckchain 🅱️✅
-    clPost blockchain/add
+    clPost /blockchain/add
 ---
-    curl.exe -X POST http://127.0.0.1:8000/blockchain/add
+    curl.exe -X POST http://127.0.0.1:8000/api/v1/blockchain/add
 
 ### Get the last (latest) Bl0ck added to the system 🔗🅱️
-    clPost blockchain/last-block 
+    cl /blockchain/last-block 
 ---
-    curl.exe -X POST http://127.0.0.1:8000/blockchain/last-block
+    curl.exe http://127.0.0.1:8000/api/v1/blockchain/last-block
 
-### Enable DDM (Dynamic Difficulty Mode) ⛓️🔄️✅
-    clPost difficulty/enable
+### Get current difficulty ⛓️🔄️✅
+    cl /difficulty/current
 ---
-    curl.exe -X POST http://127.0.0.1:8000/difficulty/enable
+    curl.exe http://127.0.0.1:8000/api/v1/difficulty/current
 
-### Disable DDM (Dynamic Difficulty Mode) ⛓️🔄️❎
-    clPost difficulty/disable
+### Enable DDM by updating the manual difficulty (1 - 10) 1️⃣-🔟
+    clPut /difficulty/manual/{Value}
 ---
-    curl.exe -X POST http://127.0.0.1:8000/difficulty/disable
+    curl.exe -X PUT http://127.0.0.1:8000/api/v1/difficulty/manual/{Value}
 
-### Set Manual Difficulty (1 - 10) 1️⃣-🔟
-    clPost difficulty/set-manual/{Value}
+### Disable DDM by switching to auto mode 🔄️✅
+    clPut /difficulty/auto
 ---
-    curl.exe -X POST http://127.0.0.1:8000/difficulty/set-manual/{Value}
+    curl.exe -X PUT http://127.0.0.1:8000/api/v1/difficulty/auto
 
-### Switch to Auto Mode 🔄️✅
-    clPost difficulty/switch-to-auto
+### Set mining timeout (10 - 300 seconds) 🕛⁉️
+    clPut /mining/timeout/{Value}
 ---
-    curl.exe -X POST http://127.0.0.1:8000/difficulty/switch-to-auto
-
-### Set Mining Timeout (10 - 300 seconds) 🕛⁉️
-    clPost mining/set-timeout/{Value}
----
-    curl.exe -X POST http://127.0.0.1:8000/mining/set-timeout/{Value}
+    curl.exe -X PUT http://127.0.0.1:8000/api/v1/mining/timeout/{Value}
