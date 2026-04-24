@@ -50,6 +50,26 @@ class Blockchain:
             self.difficulty_adjuster.set_difficulty(new_diff)
             logger.info(f"Adjusted difficulty to {new_diff} due to previous failure.")
 
+    def get_effective_difficulty(self):
+        """
+        Return the effective difficulty that will be used for the next mining attempt.
+
+        This may be lower than the configured difficulty when session-level blocked
+        thresholds are active.
+        """
+        configured = self.difficulty_adjuster.difficulty
+
+        # In manual mode, user-selected difficulty must be authoritative.
+        if self.manual_mode:
+            return configured
+
+        if self.difficulty_adjuster.blocked_thresholds:
+            min_blocked = min(self.difficulty_adjuster.blocked_thresholds)
+            if configured >= min_blocked:
+                return max(1, min_blocked - 1)
+
+        return configured
+
     # -------------------------
     # BLOCK ADDITION
     # -------------------------
@@ -60,16 +80,12 @@ class Blockchain:
 
             # Always use current difficulty (Auto or Manual)
             base_difficulty = self.difficulty_adjuster.difficulty
+            effective_difficulty = self.get_effective_difficulty()
 
-            # Respect blacklist limits
-            max_allowed_diff = base_difficulty
-            if self.difficulty_adjuster.blocked_thresholds:
-                max_block = min(self.difficulty_adjuster.blocked_thresholds)
-                if base_difficulty >= max_block:
-                    max_allowed_diff = max(1, max_block - 1)
-                    logger.debug(
-                        f"Difficulty {base_difficulty} blocked, limiting to {max_allowed_diff}"
-                    )
+            if effective_difficulty != base_difficulty:
+                logger.debug(
+                    f"Difficulty {base_difficulty} blocked, limiting to {effective_difficulty}"
+                )
 
             current_timeout = get_mining_timeout()
             fail_count = self.difficulty_adjuster.get_failure_count(base_difficulty)
@@ -100,6 +116,7 @@ class Blockchain:
                 )
 
                 if mined_hash is None:
+                    self.difficulty_adjuster.track_failed_difficulty(base_difficulty)
                     self.difficulty_adjuster.block_from_difficulty(base_difficulty)
                     new_diff = max(1, base_difficulty - 1)
                     self.difficulty_adjuster.set_difficulty(new_diff)
@@ -127,14 +144,14 @@ class Blockchain:
             # NORMAL MINING FLOW
             # -----------------------------------------
 
-            effective_difficulty = min(base_difficulty, max_allowed_diff)
-
             block, mined_hash, mining_time = attempt_mine(
                 effective_difficulty,
                 current_timeout
             )
 
             if mined_hash is None:
+                self.difficulty_adjuster.track_failed_difficulty(effective_difficulty)
+
                 fail_count = self.difficulty_adjuster.increment_failure_count(
                     effective_difficulty
                 )
@@ -150,8 +167,8 @@ class Blockchain:
                     retry_diff,
                     current_timeout
                 )
-
                 if mined_hash_retry is None:
+                    self.difficulty_adjuster.track_failed_difficulty(retry_diff)
                     logger.warning(
                         f"Mining failed again at retry difficulty {retry_diff}."
                     )

@@ -1,4 +1,4 @@
-import { apiGet } from "./api.js";
+import { API_ROUTES, apiGet } from "./api.js";
 
 const logPanel = document.getElementById("logPanel");
 const logOutput = document.getElementById("logOutput");
@@ -25,7 +25,7 @@ export function initLogs() {
     if (!logsVisible) return;
 
     try {
-      const data = await apiGet("/logs");
+      const data = await apiGet(API_ROUTES.logs);
       logOutput.textContent = (data.logs || []).join("\n");
       logOutput.scrollTop = logOutput.scrollHeight;
     } catch {}

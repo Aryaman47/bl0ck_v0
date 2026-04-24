@@ -1,4 +1,4 @@
-import { apiPost } from "./api.js";
+import { API_ROUTES, apiPost } from "./api.js";
 import { setOutput, setLastAction } from "./ui.js";
 import { state } from "./state.js";
 
@@ -7,7 +7,10 @@ const difficultyBadge = document.getElementById("difficultyBadge");
 const manualControls = document.getElementById("manualControls");
 
 export function updateModeUI() {
-  if (state.mode === "manual") {
+  const modeToggle = document.getElementById("modeToggle");
+  if (modeToggle) modeToggle.checked = state.ddmMode === "manual";
+
+  if (state.ddmMode === "manual") {
     modeBadge.textContent = "MANUAL";
     modeBadge.classList.remove("auto");
     modeBadge.classList.add("manual");
@@ -20,11 +23,21 @@ export function updateModeUI() {
   }
 }
 
-export function updateDifficultyUI() {
-  if (difficultyBadge) {
-    difficultyBadge.textContent = `D: ${state.difficulty}`;
-  }
+export function updateDifficultyUI(state_difficulty) {
+  const badge = document.getElementById("difficultyBadge");
+  if (!badge) return;
+
+  badge.textContent = `D: ${state_difficulty}`;
+
+  // Smooth color scaling (blue → red)
+  const intensity = state_difficulty / 10;
+  const hue = 220 - (intensity * 220);  // 220=blue → 0=red
+  badge.style.background = `hsl(${hue}, 70%, 35%)`;
+  badge.classList.add("bump");
+  setTimeout(() => badge.classList.remove("bump"), 200);
+
 }
+
 
 export function bindModeEvents({ modeToggle, btnSetManual, manualDifficulty }) {
 
@@ -33,13 +46,16 @@ export function bindModeEvents({ modeToggle, btnSetManual, manualDifficulty }) {
       const isManual = e.target.checked;
 
       if (!isManual) {
-        await apiPost("/difficulty/switch-to-auto");
-        state.mode = "automatic";
+        const current = await apiPost(API_ROUTES.difficultySwitchToAuto);
+        state.ddmMode = current.mode || "automatic";
+        state.difficulty = current.current_difficulty || state.difficulty;
         updateModeUI();
+        updateDifficultyUI(state.difficulty);
+        if (manualDifficulty) manualDifficulty.value = String(state.difficulty);
         setOutput("Switched to Automatic Mode.");
         setLastAction("Automatic Mode");
       } else {
-        state.mode = "manual";
+        state.ddmMode = "manual";
         updateModeUI();
       }
     });
@@ -53,18 +69,16 @@ export function bindModeEvents({ modeToggle, btnSetManual, manualDifficulty }) {
         return;
       }
 
-      await apiPost(`/difficulty/set-manual/${d}`);
-      state.mode = "manual";
-      state.difficulty = d;
+      const current = await apiPost(API_ROUTES.difficultySetManual(d));
+      state.ddmMode = current.mode || "manual";
+      state.difficulty = current.current_difficulty || d;
 
       updateModeUI();
-      updateDifficultyUI();
+      updateDifficultyUI(state.difficulty);
+      if (manualDifficulty) manualDifficulty.value = String(state.difficulty);
 
-      setOutput(`Manual Mode enabled. Difficulty: ${d}`);
+      setOutput(`Manual Mode enabled. Difficulty: ${state.difficulty}`);
       setLastAction("Manual Mode");
     });
   }
-
-  updateModeUI();
-  updateDifficultyUI();
 }

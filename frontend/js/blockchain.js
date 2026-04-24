@@ -1,5 +1,5 @@
 // frontend/js/blockchain.js - Concurrency-safe Blockchain event handlers
-import { apiGet, apiPost } from "./api.js";
+import { API_ROUTES, apiGet, apiPost } from "./api.js";
 import { setOutput, setLastAction, errToOutput } from "./ui.js";
 import { state } from "./state.js";
 
@@ -15,7 +15,7 @@ export function bindBlockchainEvents({ btnBlockchain, btnNewBlock, btnLastBlock 
 
       setLastAction("Fetching blockchain...");
       try {
-        const data = await apiGet("/blockchain/display");
+        const data = await apiGet(API_ROUTES.blockchainDisplay);
 
         // Ignore stale response
         if (currentRequest !== requestVersion) return;
@@ -36,7 +36,7 @@ export function bindBlockchainEvents({ btnBlockchain, btnNewBlock, btnLastBlock 
 
       setLastAction("Fetching last block...");
       try {
-        const block = await apiGet("/blockchain/last-block");
+        const block = await apiGet(API_ROUTES.blockchainLastBlock);
 
         if (currentRequest !== requestVersion) return;
 
@@ -71,21 +71,13 @@ export function bindBlockchainEvents({ btnBlockchain, btnNewBlock, btnLastBlock 
       }, 1000);
 
       try {
-        const res = await apiPost("/blockchain/add");
+        const res = await apiPost(API_ROUTES.blockchainAdd);
 
         clearInterval(miningInterval);
 
-        if (res.error) {
-          setOutput("Mining failed:\n" + JSON.stringify(res, null, 2));
-          setLastAction("Mining failed");
-          miningInProgress = false;
-          btnNewBlock.disabled = false;
-          return;
-        }
-
         setLastAction("Block mined successfully");
 
-        const last = await apiGet("/blockchain/last-block");
+        const last = await apiGet(API_ROUTES.blockchainLastBlock);
 
         setOutput(
           `Block mined successfully!\n` +

@@ -34,7 +34,7 @@ Follow the list of API calls mentioned below
 
 ---
 ### Root Welcome
-    cl blockchain/
+    cl /
 ---
     curl.exe http://127.0.0.1:8000/
 

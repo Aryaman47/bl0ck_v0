@@ -1,13 +1,11 @@
 import { state } from "./state.js";
 import { updateDifficultyUI } from "./mode.js";
+import { WS_ROUTES, wsUrl } from "./api.js";
 
 let ws;
 
 export function initMiningSocket() {
-  const protocol = window.location.protocol === "https:" ? "wss" : "ws";
-  const wsUrl = `${protocol}://${window.location.host}/ws/mining`;
-
-  ws = new WebSocket(wsUrl);
+  ws = new WebSocket(wsUrl(WS_ROUTES.mining));
 
   ws.onmessage = (event) => {
     const data = JSON.parse(event.data);
@@ -28,11 +26,6 @@ function updateMiningUI(data) {
   const progressFill = document.getElementById("progressFill");
 
   if (!dashboard) return;
-  
-  if (data.difficulty && state.difficulty !== data.difficulty) {
-      state.difficulty = data.difficulty;
-      updateDifficultyUI(state.difficulty);
-  }
 
   // If mining stopped → hide dashboard
   if (!data.active) {
@@ -40,7 +33,13 @@ function updateMiningUI(data) {
     progressFill.style.width = "0%";
     return;
   }
-  
+
+  // Sync live difficulty only while mining and only in automatic mode.
+  if (state.ddmMode !== "manual" && data.difficulty && state.difficulty !== data.difficulty) {
+    state.difficulty = data.difficulty;
+    updateDifficultyUI(state.difficulty);
+  }
+
   // Show dashboard
   dashboard.classList.remove("hidden");
 

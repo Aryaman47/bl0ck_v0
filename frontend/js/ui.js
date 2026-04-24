@@ -30,7 +30,7 @@ const btnClear = document.getElementById("btnClear");
 
 if (btnClear) {
   btnClear.addEventListener("click", () => {
-    if (output) output.textContent = "Welcome to The bl0ck 🔗 API UI. Use controls on left ";
+    if (output) output.textContent = "Use the buttons on the left to start mining, view blockchain or switch modes.";
     if (lastAction) lastAction.textContent = "Cleared";
   });
 }
