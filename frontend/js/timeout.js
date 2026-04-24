@@ -1,5 +1,5 @@
 // frontend/js/timeout.js - Timeout setting logic
-import { API_ROUTES, apiPost } from "./api.js";
+import { API_ROUTES, apiPut } from "./api.js";
 import { setOutput, setLastAction, errToOutput } from "./ui.js";
 import { state } from "./state.js";
 
@@ -12,7 +12,7 @@ export function bindTimeoutEvents({ btnSetTimeout, timeoutInput }) {
     }
     setLastAction("Setting timeout...");
     try {
-      await apiPost(API_ROUTES.miningSetTimeout(v));
+      await apiPut(API_ROUTES.miningSetTimeout(v));
       state.timeout = v;
       setOutput(`Timeout set to ${v} seconds.`);
       setLastAction("Timeout updated");

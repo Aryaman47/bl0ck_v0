@@ -7,9 +7,9 @@ export const API_ROUTES = {
   blockchainAdd: "/blockchain/add",
   blockchainLastBlock: "/blockchain/last-block",
   difficultyCurrent: "/difficulty/current",
-  difficultySetManual: (difficulty) => `/difficulty/set-manual/${difficulty}`,
-  difficultySwitchToAuto: "/difficulty/switch-to-auto",
-  miningSetTimeout: (timeout) => `/mining/set-timeout/${timeout}`,
+  difficultySetManual: (difficulty) => `/difficulty/manual/${difficulty}`,
+  difficultySwitchToAuto: "/difficulty/auto",
+  miningSetTimeout: (timeout) => `/mining/timeout/${timeout}`,
   logs: "/logs",
 };
 
@@ -69,6 +69,10 @@ export async function apiGet(path) {
 
 export async function apiPost(path) {
   return request("POST", path);
+}
+
+export async function apiPut(path) {
+  return request("PUT", path);
 }
 
 export function wsUrl(path) {

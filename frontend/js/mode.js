@@ -1,4 +1,4 @@
-import { API_ROUTES, apiPost } from "./api.js";
+import { API_ROUTES, apiPut } from "./api.js";
 import { setOutput, setLastAction } from "./ui.js";
 import { state } from "./state.js";
 
@@ -46,7 +46,7 @@ export function bindModeEvents({ modeToggle, btnSetManual, manualDifficulty }) {
       const isManual = e.target.checked;
 
       if (!isManual) {
-        const current = await apiPost(API_ROUTES.difficultySwitchToAuto);
+        const current = await apiPut(API_ROUTES.difficultySwitchToAuto);
         state.ddmMode = current.mode || "automatic";
         state.difficulty = current.current_difficulty || state.difficulty;
         updateModeUI();
@@ -69,7 +69,7 @@ export function bindModeEvents({ modeToggle, btnSetManual, manualDifficulty }) {
         return;
       }
 
-      const current = await apiPost(API_ROUTES.difficultySetManual(d));
+      const current = await apiPut(API_ROUTES.difficultySetManual(d));
       state.ddmMode = current.mode || "manual";
       state.difficulty = current.current_difficulty || d;
 
