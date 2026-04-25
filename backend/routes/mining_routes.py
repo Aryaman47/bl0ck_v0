@@ -43,14 +43,14 @@ async def set_backend_mode(backend_name: str):
 
 @router.put("/timeout/{timeout}", response_model=MiningTimeoutResponse, responses={400: {"model": ErrorResponse}, 422: {"model": ErrorResponse}})
 async def update_mining_timeout(timeout: int):
-    if timeout < 10 or timeout > 300:
+    if timeout < 2 or timeout > 300:
         raise HTTPException(
             status_code=400,
             detail={
                 "code": "INVALID_TIMEOUT",
                 "message": "Invalid timeout. Please set a value between 10 and 300 seconds.",
                 "details": {
-                    "min": 10,
+                    "min": 2,
                     "max": 300,
                     "provided": timeout,
                 },

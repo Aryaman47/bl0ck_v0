@@ -94,8 +94,17 @@ async def status():
     ddm_enabled = bool(getattr(blockchain, "dynamic_difficulty_enabled", False))
     ddm_mode = "manual" if getattr(blockchain, "manual_mode", False) else "auto"
     timeout = get_mining_timeout()
-    difficulty = getattr(blockchain, "get_effective_difficulty", lambda: 1)()
+    configured_difficulty = getattr(blockchain.difficulty_adjuster, "difficulty", 1)
+    effective_difficulty = getattr(blockchain, "get_effective_difficulty", lambda: configured_difficulty)()
     failed = getattr(blockchain.difficulty_adjuster, "failed_difficulty", None)
+    failure_counts = getattr(blockchain.difficulty_adjuster, "failure_counts", {}) or {}
+    failed_difficulty_counts = [
+        {
+            "difficulty": int(diff),
+            "fail_count": int(count),
+        }
+        for diff, count in sorted(failure_counts.items())
+    ]
 
     return success_response(
         "Status fetched",
@@ -103,8 +112,11 @@ async def status():
             "ddm_enabled": ddm_enabled,
             "ddm_mode": ddm_mode,
             "timeout": timeout,
-            "difficulty": difficulty,
+            "difficulty": effective_difficulty,
+            "configured_difficulty": configured_difficulty,
+            "effective_difficulty": effective_difficulty,
             "failed_difficulty": failed,
+            "failed_difficulty_counts": failed_difficulty_counts,
             "mining_backend": get_mining_backend_capabilities(),
         },
     )

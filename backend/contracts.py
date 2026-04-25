@@ -35,6 +35,8 @@ class AddBlockData(BaseModel):
 
 class DifficultyStateData(BaseModel):
     mode: Literal["manual", "automatic"]
+    configured_difficulty: int
+    effective_difficulty: int
     current_difficulty: int
 
 
@@ -54,12 +56,20 @@ class LogsData(BaseModel):
     logs: list[str]
 
 
+class FailedDifficultyCountData(BaseModel):
+    difficulty: int
+    fail_count: int
+
+
 class StatusData(BaseModel):
     ddm_enabled: bool
     ddm_mode: Literal["auto", "manual"]
     timeout: int
     difficulty: int
+    configured_difficulty: int
+    effective_difficulty: int
     failed_difficulty: int | None = None
+    failed_difficulty_counts: list[FailedDifficultyCountData] = []
     mining_backend: MiningBackendData
 
 

@@ -1,5 +1,5 @@
 import { state } from "./state.js";
-import { updateDifficultyUI } from "./mode.js";
+import { updateDifficultyUI, updateDifficultyUsageIndicator } from "./mode.js";
 import { WS_ROUTES, wsUrl } from "./api.js";
 
 let ws;
@@ -34,10 +34,15 @@ function updateMiningUI(data) {
     return;
   }
 
-  // Sync live difficulty only while mining and only in automatic mode.
-  if (state.ddmMode !== "manual" && data.difficulty && state.difficulty !== data.difficulty) {
-    state.difficulty = data.difficulty;
-    updateDifficultyUI(state.difficulty);
+  // Sync live effective difficulty while mining in every mode.
+  // In manual mode this makes fallback difficulty visible immediately.
+  if (data.difficulty && state.effectiveDifficulty !== data.difficulty) {
+    state.effectiveDifficulty = data.difficulty;
+    if (state.ddmMode !== "manual" || !state.manualConfigured) {
+      state.difficulty = state.effectiveDifficulty;
+    }
+    updateDifficultyUI(state.configuredDifficulty, state.effectiveDifficulty);
+    updateDifficultyUsageIndicator();
   }
 
   // Show dashboard

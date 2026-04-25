@@ -2,7 +2,7 @@
 
 import { API_ROUTES, apiGet } from "./api.js";
 import { setOutput, setLastAction, updateModeLabels } from "./ui.js";
-import { updateDifficultyUI, updateModeUI } from "./mode.js";
+import { updateDifficultyUI, updateDifficultyUsageIndicator, updateModeUI } from "./mode.js";
 
 export async function init(state) {
   setOutput("Initializing from server...");
@@ -16,20 +16,44 @@ export async function init(state) {
     state.ddmEnabled = !!s.ddm_enabled;
     state.ddmMode = current.mode === "manual" ? "manual" : "auto";
     state.timeout = s.timeout || state.timeout;
-    state.difficulty = current.current_difficulty || s.difficulty || state.difficulty;
+
+    const configured =
+      current.configured_difficulty ??
+      s.configured_difficulty ??
+      s.difficulty ??
+      state.configuredDifficulty;
+
+    const effective =
+      current.effective_difficulty ??
+      s.effective_difficulty ??
+      s.difficulty ??
+      state.effectiveDifficulty;
+
+    state.configuredDifficulty = configured;
+    state.effectiveDifficulty = effective;
+    state.manualConfigured = state.ddmMode === "manual";
+    state.difficulty = state.ddmMode === "manual" ? configured : effective;
 
     updateModeLabels(state);
     updateModeUI();
-    updateDifficultyUI(state.difficulty);
+    updateDifficultyUI(state.configuredDifficulty, state.effectiveDifficulty);
+    updateDifficultyUsageIndicator();
     const manualDifficulty = document.getElementById("manualDifficulty");
     if (manualDifficulty) manualDifficulty.value = String(state.difficulty);
-    setOutput(`Status loaded.\nDDM: ${state.ddmEnabled} (${state.ddmMode})\nTimeout: ${state.timeout}s\nDifficulty: ${state.difficulty}`);
+    setOutput(
+      `Status loaded.\n` +
+      `DDM: ${state.ddmEnabled} (${state.ddmMode})\n` +
+      `Timeout: ${state.timeout}s\n` +
+      `Configured Difficulty: ${state.configuredDifficulty}\n` +
+      `Effective Difficulty: ${state.effectiveDifficulty}`
+    );
     setLastAction("Ready");
   } catch (err) {
     setOutput("Could not fetch API status. Using defaults.\n" + err.message);
     setLastAction("Init failed (fallback)");
     updateModeLabels(state);
     updateModeUI();
-    updateDifficultyUI(state.difficulty);
+    updateDifficultyUI(state.configuredDifficulty, state.effectiveDifficulty);
+    updateDifficultyUsageIndicator();
   }
 }

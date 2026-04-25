@@ -1,5 +1,6 @@
 // frontend/js/blockchain.js - Concurrency-safe Blockchain event handlers
 import { API_ROUTES, apiGet, apiPost } from "./api.js";
+import { updateDifficultyUI, updateDifficultyUsageIndicator } from "./mode.js";
 import { setOutput, setLastAction, errToOutput } from "./ui.js";
 import { state } from "./state.js";
 
@@ -63,6 +64,14 @@ export function bindBlockchainEvents({ btnBlockchain, btnNewBlock, btnLastBlock 
 
       setLastAction("Mining started...");
       setOutput("Mining in progress...\nElapsed: 0s");
+
+      // If manual mode is toggled but not explicitly configured in this toggle cycle,
+      // keep mining context aligned with effective difficulty.
+      if (state.ddmMode === "manual" && !state.manualConfigured) {
+        state.difficulty = state.effectiveDifficulty;
+        updateDifficultyUI(state.configuredDifficulty, state.effectiveDifficulty);
+        updateDifficultyUsageIndicator();
+      }
 
       // Start live elapsed timer
       miningInterval = setInterval(() => {
